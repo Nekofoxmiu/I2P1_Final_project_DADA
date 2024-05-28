@@ -1,5 +1,36 @@
-MinGW
-Code/game.exe
+# 忽略 MinGW 編譯生成的所有文件
+*.exe
+*.o
+*.a
+*.out
+*.dll
+*.lib
+
+# 忽略 Allegro 庫生成的所有文件
 allegro
 allegro_mac
-Code/allegro.log
+
+# 忽略 log 文件
+*.log
+
+# 忽略臨時文件
+*.tmp
+*.temp
+
+# 忽略 MacOS 系統文件
+.DS_Store
+
+# 忽略 MacOS 系統文件
+MinGW
+
+# 忽略 Windows 系統文件
+Thumbs.db
+
+# 忽略編譯生成的目錄
+Code/build/
+Code/bin/
+
+# 忽略 IDE 設定文件（根據實際使用的 IDE 添加）
+.vscode/
+.idea/
+*.code-workspace
