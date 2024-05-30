@@ -12,6 +12,9 @@ typedef struct _Enemy
     int width, height;
     bool dir;
     int state;
+    float blood;
+    float armor;
+    float damage;
     Character *target;              // the character to track
     ALGIF_ANIMATION *gif_status[3]; // gif for each state: 0: stop, 1: move, 2: attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;

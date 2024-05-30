@@ -22,6 +22,7 @@ Elements *New_Projectile(int label, double x, double y, int v, double wx, double
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
     pObj->inter_obj[pObj->inter_len++] = Floor_L;
+    pObj->inter_obj[pObj->inter_len++] = Enemy_L;
     // setting derived object function
     pObj->pDerivedObj = pDerivedObj;
     pObj->Update = Projectile_update;
@@ -60,6 +61,15 @@ void Projectile_interact(Elements *self, Elements *tar)
         Tree *tree = ((Tree *)(tar->pDerivedObj));
         if (tree->hitbox->overlap(tree->hitbox, Obj->hitbox))
         {
+            self->dele = true;
+        }
+    }
+    else if (tar->label == Enemy_L)
+    {
+        Enemy *enemy = ((Enemy *)(tar->pDerivedObj));
+        if (enemy->hitbox->overlap(enemy->hitbox, Obj->hitbox))
+        {
+            enemy->blood -= 5;
             self->dele = true;
         }
     }
