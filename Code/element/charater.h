@@ -36,5 +36,6 @@ void Character_update(Elements *self);
 void Character_interact(Elements *self, Elements *target);
 void Character_draw(Elements *self);
 void Character_destory(Elements *self);
+void Character_get_position(Elements *self, float *x, float *y);
 
 #endif

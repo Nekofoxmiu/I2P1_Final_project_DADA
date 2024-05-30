@@ -7,6 +7,7 @@ typedef struct _Elements Elements;
 typedef void (*fptrEleDraw)(Elements *);
 typedef void (*fptrEleUpdate)(Elements *);
 typedef void (*fptrEleInteract)(Elements *, Elements *);
+typedef void (*fptrEleGetPosition)(Elements *, float *, float *);
 typedef void (*fptrEleDestroy)(Elements *);
 struct _Elements
 {
@@ -21,6 +22,7 @@ struct _Elements
     fptrEleUpdate Update;
     fptrEleInteract Interact;
     fptrEleDestroy Destroy;
+    fptrEleGetPosition GetPosition;
 };
 Elements *New_Elements(int label);
 
