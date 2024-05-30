@@ -18,7 +18,7 @@ Elements *New_Floor(int label);
 void _Floor_load_map(Floor *floor);
 void Floor_update(Elements *self);
 void Floor_interact(Elements *self, Elements *tar);
-void Floor_draw(Elements *self, float offset_x,  float offset_y);
+void Floor_draw(Elements *self);
 void Floor_destory(Elements *self);
 
 #endif

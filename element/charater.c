@@ -5,16 +5,9 @@
 #include "../algif5/src/algif.h"
 #include <stdio.h>
 #include <stdbool.h>
-
 /*
    [Character function]
 */
-void Character_get_position(Elements *self, float *x, float *y)
-{
-    Character *chara = (Character *)(self->pDerivedObj);
-    *x = chara->x;
-    *y = chara->y;
-}
 Elements *New_Character(int label)
 {
     Character *pDerivedObj = (Character *)malloc(sizeof(Character));
@@ -24,8 +17,8 @@ Elements *New_Character(int label)
     char state_string[3][10] = {"stop", "move", "attack"};
     for (int i = 0; i < 3; i++)
     {
-        char buffer[100];
-        snprintf(buffer, sizeof(buffer), "assets/image/chara_%s.gif", state_string[i]);
+        char buffer[50];
+        sprintf(buffer, "assets/image/chara_%s.gif", state_string[i]);
         pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
     }
     // load effective sound
@@ -53,7 +46,6 @@ Elements *New_Character(int label)
     pObj->Update = Character_update;
     pObj->Interact = Character_interact;
     pObj->Destroy = Character_destory;
-    pObj->GetPosition = Character_get_position;
     return pObj;
 }
 void Character_update(Elements *self)
@@ -66,24 +58,14 @@ void Character_update(Elements *self)
         {
             chara->state = ATK;
         }
-        else if (key_state[ALLEGRO_KEY_W])
-        {
-            chara->dir = false;
-            chara->state = MOVE;
-        }
         else if (key_state[ALLEGRO_KEY_A])
-        {
-            chara->dir = true;
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_S])
         {
             chara->dir = false;
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
-            chara->dir = false;
+            chara->dir = true;
             chara->state = MOVE;
         }
         else
@@ -97,28 +79,16 @@ void Character_update(Elements *self)
         {
             chara->state = ATK;
         }
-        else if (key_state[ALLEGRO_KEY_W])
-        {
-            chara->dir = false;
-            _Character_update_position(self, 0, 5);
-            chara->state = MOVE;
-        }
         else if (key_state[ALLEGRO_KEY_A])
         {
             chara->dir = false;
-            _Character_update_position(self, 5, 0);
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_S])
-        {
-            chara->dir = false;
-            _Character_update_position(self, 0, -5);
+            _Character_update_position(self, -5, 0);
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
             chara->dir = true;
-            _Character_update_position(self, -5, 0);
+            _Character_update_position(self, 5, 0);
             chara->state = MOVE;
         }
         if (chara->gif_status[chara->state]->done)
@@ -153,22 +123,20 @@ void Character_update(Elements *self)
         }
     }
 }
-
-void Character_draw(Elements *self, float offset_x, float offset_y)
+void Character_draw(Elements *self)
 {
     // with the state, draw corresponding image
     Character *chara = ((Character *)(self->pDerivedObj));
     ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, chara->x + offset_x, chara->y + offset_y, ((chara->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)
     {
         al_play_sample_instance(chara->atk_Sound);
     }
 }
-
 void Character_destory(Elements *self)
 {
     Character *Obj = ((Character *)(self->pDerivedObj));
