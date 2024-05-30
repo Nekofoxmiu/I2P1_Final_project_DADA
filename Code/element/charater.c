@@ -36,7 +36,7 @@ Elements *New_Character(int label)
                                         pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
-    pDerivedObj->dir = false; // true: face to right, false: face to left
+    pDerivedObj->dir = 'L'; // true: face to right, false: face to left
     // initial the animation component
     pDerivedObj->state = STOP;
     pDerivedObj->new_proj = false;
@@ -60,12 +60,21 @@ void Character_update(Elements *self)
         }
         else if (key_state[ALLEGRO_KEY_A])
         {
-            chara->dir = false;
+            chara->dir = 'L';
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
-            chara->dir = true;
+            chara->dir = 'R';
+            chara->state = MOVE;
+        
+        }
+        else if (key_state[ALLEGRO_KEY_W]) {
+            chara->dir = 'U';
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_S]) {
+            chara->dir = 'D';
             chara->state = MOVE;
         }
         else
@@ -81,14 +90,26 @@ void Character_update(Elements *self)
         }
         else if (key_state[ALLEGRO_KEY_A])
         {
-            chara->dir = false;
+            chara->dir = 'L';
             _Character_update_position(self, -5, 0);
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
-            chara->dir = true;
+            chara->dir = 'R';
             _Character_update_position(self, 5, 0);
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_W])
+        {
+            chara->dir = 'U';
+            _Character_update_position(self, 0, -5);
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_S])
+        {
+            chara->dir = 'D';
+            _Character_update_position(self, 0, 5);
             chara->state = MOVE;
         }
         if (chara->gif_status[chara->state]->done)
@@ -104,14 +125,14 @@ void Character_update(Elements *self)
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
             Elements *pro;
-            if (chara->dir)
+            if (chara->dir == 'R')
             {
                 pro = New_Projectile(Projectile_L,
                                      chara->x + chara->width - 100,
                                      chara->y + 10,
                                      5);
             }
-            else
+            else if (chara->dir == 'L')
             {
                 pro = New_Projectile(Projectile_L,
                                      chara->x - 50,
