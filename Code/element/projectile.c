@@ -3,7 +3,7 @@
 /*
    [Projectile function]
 */
-Elements *New_Projectile(int label, int x, int y, int v)
+Elements *New_Projectile(int label, double x, double y, int v, double wx, double wy)
 {
     Projectile *pDerivedObj = (Projectile *)malloc(sizeof(Projectile));
     Elements *pObj = New_Elements(label);
@@ -14,6 +14,8 @@ Elements *New_Projectile(int label, int x, int y, int v)
     pDerivedObj->x = x;
     pDerivedObj->y = y;
     pDerivedObj->v = v;
+    pDerivedObj->wx = wx;
+    pDerivedObj->wy = wy;
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 2,
                                      pDerivedObj->y + pDerivedObj->height / 2,
                                      min(pDerivedObj->width, pDerivedObj->height) / 2);
@@ -32,9 +34,9 @@ Elements *New_Projectile(int label, int x, int y, int v)
 void Projectile_update(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    _Projectile_update_position(self, Obj->v, 0);
+    _Projectile_update_position(self, Obj->v * Obj->wx, Obj->v * Obj->wy);
 }
-void _Projectile_update_position(Elements *self, int dx, int dy)
+void _Projectile_update_position(Elements *self, double dx, double dy)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     Obj->x += dx;
