@@ -46,6 +46,7 @@ Elements *New_Character(int label)
     pObj->Update = Character_update;
     pObj->Interact = Character_interact;
     pObj->Destroy = Character_destory;
+    pObj->GetPosition = Character_get_position;
     return pObj;
 }
 void Character_update(Elements *self)
@@ -146,6 +147,13 @@ void Character_destory(Elements *self)
     free(Obj->hitbox);
     free(Obj);
     free(self);
+}
+
+void Character_get_position(Elements *self, float *x, float *y)
+{
+    Character *chara = (Character *)(self->pDerivedObj);
+    *x = chara->x;
+    *y = chara->y;
 }
 
 void _Character_update_position(Elements *self, int dx, int dy)
