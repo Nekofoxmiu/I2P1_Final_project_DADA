@@ -21,10 +21,8 @@ typedef enum EleType
 typedef struct _GameScene
 {
     ALLEGRO_BITMAP *background;
-    float offset_x; // 場景x偏移量
-    float offset_y; // 場景y偏移量
-} GameScene;
 
+} GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
 void game_scene_draw(Scene *self);
