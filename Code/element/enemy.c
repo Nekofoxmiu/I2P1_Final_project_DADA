@@ -20,24 +20,11 @@ Elements *New_Enemy(int label, Character *target)
     Enemy *pDerivedObj = (Enemy *)malloc(sizeof(Enemy));
     Elements *pObj = New_Elements(label);
 
-    // 隨機生成初始位置在角色周遭400範圍內
-    double angle = ((double)rand() / RAND_MAX) * 2 * M_PI;
-    double radius = ((double)rand() / RAND_MAX) * MAX_DISTANCE;
-    pDerivedObj->x = target->x + (int)(radius * cos(angle));
-    pDerivedObj->y = target->y + (int)(radius * sin(angle));
-
-    // 初始化敵人的其他成員
-    pDerivedObj->width = 50;      // 假設敵人的寬度為50
-    pDerivedObj->height = 50;     // 假設敵人的高度為50
-    pDerivedObj->dir = true;      // 初始方向
-    pDerivedObj->state = STOP;    // 初始狀態
-    pDerivedObj->target = target; // 設定目標角色
-
     // 加載動畫
     char state_string[3][10] = {"stop", "move", "attack"};
     for (int i = 0; i < 3; i++)
     {
-        char buffer[50];
+        char buffer[53];
         sprintf(buffer, "assets/image/enemy_%s.gif", state_string[i]);
         pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
     }
@@ -47,9 +34,23 @@ Elements *New_Enemy(int label, Character *target)
     al_set_sample_instance_playmode(pDerivedObj->atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->atk_Sound, al_get_default_mixer());
 
+    // 隨機生成初始位置在角色周遭400範圍內
+    double angle = ((double)rand() / RAND_MAX) * 2 * M_PI;
+    double radius = ((double)rand() / RAND_MAX) * MAX_DISTANCE;
+    pDerivedObj->x = target->x + (int)(radius * cos(angle));
+    pDerivedObj->y = target->y + (int)(radius * sin(angle));
+
+    // 初始化敵人的其他成員
+    pDerivedObj->width = pDerivedObj->gif_status[0]->width;
+    pDerivedObj->height = pDerivedObj->gif_status[0]->height;
+    pDerivedObj->blood = 20;
+    pDerivedObj->armor = 1;
+    pDerivedObj->damage = 2;
+    pDerivedObj->dir = true;      // 初始方向
+    pDerivedObj->state = STOP;    // 初始狀態
+    pDerivedObj->target = target; // 設定目標角色
     pDerivedObj->anime = 0;
     pDerivedObj->anime_time = 0;
-
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
@@ -65,6 +66,12 @@ void Enemy_update(Elements *self)
 {
     Enemy *enemy = (Enemy *)(self->pDerivedObj);
     Character *target = enemy->target;
+
+    if(enemy->blood <= 0)
+    {
+        self->dele = true;
+        return;
+    }
 
     // 計算敵人與角色之間的距離
     int dx = target->x - enemy->x;

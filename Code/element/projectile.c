@@ -3,7 +3,7 @@
 /*
    [Projectile function]
 */
-Elements *New_Projectile(int label, int x, int y, int v)
+Elements *New_Projectile(int label, double x, double y, int v, double wx, double wy)
 {
     Projectile *pDerivedObj = (Projectile *)malloc(sizeof(Projectile));
     Elements *pObj = New_Elements(label);
@@ -14,12 +14,15 @@ Elements *New_Projectile(int label, int x, int y, int v)
     pDerivedObj->x = x;
     pDerivedObj->y = y;
     pDerivedObj->v = v;
+    pDerivedObj->wx = wx;
+    pDerivedObj->wy = wy;
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 2,
                                      pDerivedObj->y + pDerivedObj->height / 2,
                                      min(pDerivedObj->width, pDerivedObj->height) / 2);
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
     pObj->inter_obj[pObj->inter_len++] = Floor_L;
+    pObj->inter_obj[pObj->inter_len++] = Enemy_L;
     // setting derived object function
     pObj->pDerivedObj = pDerivedObj;
     pObj->Update = Projectile_update;
@@ -32,9 +35,9 @@ Elements *New_Projectile(int label, int x, int y, int v)
 void Projectile_update(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    _Projectile_update_position(self, Obj->v, 0);
+    _Projectile_update_position(self, Obj->v * Obj->wx, Obj->v * Obj->wy);
 }
-void _Projectile_update_position(Elements *self, int dx, int dy)
+void _Projectile_update_position(Elements *self, double dx, double dy)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     Obj->x += dx;
@@ -58,6 +61,15 @@ void Projectile_interact(Elements *self, Elements *tar)
         Tree *tree = ((Tree *)(tar->pDerivedObj));
         if (tree->hitbox->overlap(tree->hitbox, Obj->hitbox))
         {
+            self->dele = true;
+        }
+    }
+    else if (tar->label == Enemy_L)
+    {
+        Enemy *enemy = ((Enemy *)(tar->pDerivedObj));
+        if (enemy->hitbox->overlap(enemy->hitbox, Obj->hitbox))
+        {
+            enemy->blood -= 5;
             self->dele = true;
         }
     }

@@ -5,6 +5,8 @@
 #include "../algif5/src/algif.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
+
 /*
    [Character function]
 */
@@ -17,7 +19,7 @@ Elements *New_Character(int label)
     char state_string[3][10] = {"stop", "move", "attack"};
     for (int i = 0; i < 3; i++)
     {
-        char buffer[50];
+        char buffer[53];
         sprintf(buffer, "assets/image/chara_%s.gif", state_string[i]);
         pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
     }
@@ -32,11 +34,13 @@ Elements *New_Character(int label)
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
     pDerivedObj->x = 300;
     pDerivedObj->y = HEIGHT - pDerivedObj->height - 60;
+    pDerivedObj->weapon_dir_x = pDerivedObj->x;
+    pDerivedObj->weapon_dir_y = pDerivedObj->y;
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x,
                                         pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
-    pDerivedObj->dir = false; // true: face to right, false: face to left
+    pDerivedObj->dir = 'L'; // true: face to right, false: face to left
     // initial the animation component
     pDerivedObj->state = STOP;
     pDerivedObj->new_proj = false;
@@ -49,10 +53,16 @@ Elements *New_Character(int label)
     pObj->GetPosition = Character_get_position;
     return pObj;
 }
+
 void Character_update(Elements *self)
 {
     // use the idea of finite state machine to deal with different state
     Character *chara = ((Character *)(self->pDerivedObj));
+
+    // update weapon direction
+    ALLEGRO_MOUSE_STATE state;
+    al_get_mouse_state(&state);
+
     if (chara->state == STOP)
     {
         if (key_state[ALLEGRO_KEY_SPACE])
@@ -61,12 +71,22 @@ void Character_update(Elements *self)
         }
         else if (key_state[ALLEGRO_KEY_A])
         {
-            chara->dir = false;
+            chara->dir = 'L';
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
-            chara->dir = true;
+            chara->dir = 'R';
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_W])
+        {
+            chara->dir = 'U';
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_S])
+        {
+            chara->dir = 'D';
             chara->state = MOVE;
         }
         else
@@ -82,14 +102,26 @@ void Character_update(Elements *self)
         }
         else if (key_state[ALLEGRO_KEY_A])
         {
-            chara->dir = false;
+            chara->dir = 'L';
             _Character_update_position(self, -5, 0);
             chara->state = MOVE;
         }
         else if (key_state[ALLEGRO_KEY_D])
         {
-            chara->dir = true;
+            chara->dir = 'R';
             _Character_update_position(self, 5, 0);
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_W])
+        {
+            chara->dir = 'U';
+            _Character_update_position(self, 0, -5);
+            chara->state = MOVE;
+        }
+        else if (key_state[ALLEGRO_KEY_S])
+        {
+            chara->dir = 'D';
+            _Character_update_position(self, 0, 5);
             chara->state = MOVE;
         }
         if (chara->gif_status[chara->state]->done)
@@ -104,26 +136,37 @@ void Character_update(Elements *self)
         }
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
-            Elements *pro;
-            if (chara->dir)
+            double offset_x = (chara->dir == 'R') ? chara->width - 50 : -50;
+            double offset_y = 10;
+            double weapon_x = chara->x + offset_x;
+            double weapon_y = chara->y + offset_y;
+
+            double dx = state.x - weapon_x;
+            double dy = state.y - weapon_y;
+            double len = sqrt(dx * dx + dy * dy);
+
+            if (len != 0)
             {
-                pro = New_Projectile(Projectile_L,
-                                     chara->x + chara->width - 100,
-                                     chara->y + 10,
-                                     5);
+                chara->weapon_dir_x = dx / len;
+                chara->weapon_dir_y = dy / len;
             }
             else
             {
-                pro = New_Projectile(Projectile_L,
-                                     chara->x - 50,
-                                     chara->y + 10,
-                                     -5);
+                chara->weapon_dir_x = 1;
+                chara->weapon_dir_y = 0;
             }
+
+            Elements *pro;
+            pro = New_Projectile(Projectile_L,
+                                 weapon_x,
+                                 weapon_y,
+                                 10, chara->weapon_dir_x, chara->weapon_dir_y);
             _Register_elements(scene, pro);
             chara->new_proj = true;
         }
     }
 }
+
 void Character_draw(Elements *self)
 {
     // with the state, draw corresponding image
@@ -131,13 +174,14 @@ void Character_draw(Elements *self)
     ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)
     {
         al_play_sample_instance(chara->atk_Sound);
     }
 }
+
 void Character_destory(Elements *self)
 {
     Character *Obj = ((Character *)(self->pDerivedObj));
