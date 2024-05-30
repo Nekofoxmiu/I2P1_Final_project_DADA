@@ -59,6 +59,9 @@ void Character_update(Elements *self)
     // use the idea of finite state machine to deal with different state
     Character *chara = ((Character *)(self->pDerivedObj));
 
+    //解決奇怪的初始化時碰撞箱似乎不正確問題(非常醜的解法可以的話最好改掉就是)
+    _Character_update_position(self, 0, 0);
+
     // update weapon direction
     ALLEGRO_MOUSE_STATE state;
     al_get_mouse_state(&state);
