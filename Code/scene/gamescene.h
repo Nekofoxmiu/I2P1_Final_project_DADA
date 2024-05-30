@@ -1,12 +1,15 @@
 #ifndef GAMESCENE_H_INCLUDED
 #define GAMESCENE_H_INCLUDED
 #include "scene.h"
+#include "../global.h"
 #include "../element/element.h"
 #include "../element/charater.h"
 #include "../element/floor.h"
 #include "../element/teleport.h"
 #include "../element/tree.h"
 #include "../element/projectile.h"
+#include "../element/enemy.h"  
+
 /*
    [game scene object]
 */
@@ -16,6 +19,7 @@ typedef enum EleType
     Teleport_L,
     Tree_L,
     Character_L,
+    Enemy_L,
     Projectile_L
 } EleType;
 typedef struct _GameScene
