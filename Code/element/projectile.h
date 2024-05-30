@@ -8,16 +8,17 @@
 */
 typedef struct _Projectile
 {
-    int x, y;          // the position of image
+    double x, y;          // the position of image
     int width, height; // the width and height of image
     int v;             // the velocity of projectile
+    double wx, wy;
     ALLEGRO_BITMAP *img;
     Shape *hitbox; // the hitbox of object
 } Projectile;
-Elements *New_Projectile(int label, int x, int y, int v);
+Elements *New_Projectile(int label, double x, double y, int v, double wx, double wy);
 void Projectile_update(Elements *self);
 void Projectile_interact(Elements *self, Elements *tar);
 void Projectile_draw(Elements *self);
 void Projectile_destory(Elements *self);
-void _Projectile_update_position(Elements *self, int dx, int dy);
+void _Projectile_update_position(Elements *self, double dx, double dy);
 #endif

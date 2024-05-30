@@ -5,6 +5,7 @@
 #include "../algif5/src/algif.h"
 #include <stdio.h>
 #include <stdbool.h>
+#include <math.h>
 /*
    [Character function]
 */
@@ -32,6 +33,8 @@ Elements *New_Character(int label)
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
     pDerivedObj->x = 300;
     pDerivedObj->y = HEIGHT - pDerivedObj->height - 60;
+    pDerivedObj->weapon_dir_x = pDerivedObj->x;
+    pDerivedObj->weapon_dir_y = pDerivedObj->y;
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x,
                                         pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
@@ -52,6 +55,23 @@ void Character_update(Elements *self)
 {
     // use the idea of finite state machine to deal with different state
     Character *chara = ((Character *)(self->pDerivedObj));
+
+    // update weapon direction
+    ALLEGRO_MOUSE_STATE state;
+    al_get_mouse_state(&state);
+
+    double dx = state.x - chara->x;
+    double dy = state.y - chara->y;
+    double len = sqrt(dx * dx + dy * dy);
+
+    if (len != 0) {
+        chara->weapon_dir_x = dx / len;
+        chara->weapon_dir_y = dy / len;
+    } else {
+        chara->weapon_dir_x = 1;
+        chara->weapon_dir_y = 0;
+    }
+
     if (chara->state == STOP)
     {
         if (key_state[ALLEGRO_KEY_SPACE])
@@ -130,14 +150,14 @@ void Character_update(Elements *self)
                 pro = New_Projectile(Projectile_L,
                                      chara->x + chara->width - 100,
                                      chara->y + 10,
-                                     5);
+                                     10, chara->weapon_dir_x, chara->weapon_dir_y);
             }
             else if (chara->dir == 'L')
             {
                 pro = New_Projectile(Projectile_L,
                                      chara->x - 50,
                                      chara->y + 10,
-                                     -5);
+                                     10, chara->weapon_dir_x, chara->weapon_dir_y);
             }
             _Register_elements(scene, pro);
             chara->new_proj = true;
@@ -151,7 +171,7 @@ void Character_draw(Elements *self)
     ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)
     {
