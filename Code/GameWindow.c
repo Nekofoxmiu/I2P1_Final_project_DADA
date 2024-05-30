@@ -51,6 +51,12 @@ void execute(Game *self)
         case ALLEGRO_EVENT_KEY_DOWN:
         {
             key_state[event.keyboard.keycode] = true;
+
+            if (event.keyboard.keycode == ALLEGRO_KEY_J)
+            {
+                spawn_enemy = true; // 設置敵人生成標誌位
+            }
+
             break;
         }
         case ALLEGRO_EVENT_KEY_UP:

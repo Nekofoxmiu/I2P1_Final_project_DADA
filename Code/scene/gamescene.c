@@ -13,17 +13,32 @@ Scene *New_GameScene(int label)
     _Register_elements(pObj, New_Floor(Floor_L));
     _Register_elements(pObj, New_Teleport(Teleport_L));
     _Register_elements(pObj, New_Tree(Tree_L));
-    _Register_elements(pObj, New_Character(Character_L));
+    Elements *character = New_Character(Character_L);
+    _Register_elements(pObj, character);
+    _Register_elements(pObj, New_Enemy(Enemy_L, (Character *)(character->pDerivedObj)));
+
     // setting derived object function
     pObj->Update = game_scene_update;
     pObj->Draw = game_scene_draw;
     pObj->Destroy = game_scene_destroy;
     return pObj;
 }
+
+bool key_j_pressed = false;
+
 void game_scene_update(Scene *self)
 {
+
     // update every element
     ElementVec allEle = _Get_all_elements(self);
+
+    if (spawn_enemy)
+    {
+        spawn_enemy = false; // set the flag indicating the key is pressed
+        Elements *enemy = New_Enemy(Enemy_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+        _Register_elements(self, enemy);
+    }
+    
     for (int i = 0; i < allEle.len; i++)
     {
         allEle.arr[i]->Update(allEle.arr[i]);

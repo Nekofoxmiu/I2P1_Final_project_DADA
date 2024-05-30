@@ -24,5 +24,6 @@ extern ALLEGRO_EVENT_QUEUE *event_queue;
 extern ALLEGRO_EVENT event;
 extern ALLEGRO_TIMER *fps;
 extern bool debug_mode;
+extern bool spawn_enemy;
 
 #endif
