@@ -55,7 +55,7 @@ void Floor_interact(Elements *self, Elements *tar)
         }
     }
 }
-void Floor_draw(Elements *self, float offset_x, float offset_y)
+void Floor_draw(Elements *self)
 {
     Floor *Obj = ((Floor *)(self->pDerivedObj));
     for (int i = 0; i < 6; i++)
@@ -64,12 +64,11 @@ void Floor_draw(Elements *self, float offset_x, float offset_y)
         {
             if (Obj->map_data[i][j])
             {
-                al_draw_bitmap(Obj->img, Obj->x + j * Obj->width - offset_x, Obj->y + i * Obj->height - offset_y, 0);
+                al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
             }
         }
     }
 }
-
 void Floor_destory(Elements *self)
 {
     Floor *Obj = ((Floor *)(self->pDerivedObj));
