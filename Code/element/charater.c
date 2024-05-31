@@ -63,22 +63,6 @@ void Character_update(Elements *self)
     //解決奇怪的初始化時碰撞箱似乎不正確問題(非常醜的解法可以的話最好改掉就是)
     _Character_update_position(self, 0, 0);
 
-    // update weapon direction
-    ALLEGRO_MOUSE_STATE state;
-    al_get_mouse_state(&state);
-
-    double dx = state.x - chara->x;
-    double dy = state.y - chara->y;
-    double len = sqrt(dx * dx + dy * dy);
-
-    if (len != 0) {
-        chara->weapon_dir_x = dx / len;
-        chara->weapon_dir_y = dy / len;
-    } else {
-        chara->weapon_dir_x = 1;
-        chara->weapon_dir_y = 0;
-    }
-
     if (chara->state == STOP)
     {
         if (key_state[ALLEGRO_KEY_SPACE])
@@ -157,8 +141,8 @@ void Character_update(Elements *self)
             double weapon_x = chara->x + offset_x;
             double weapon_y = chara->y + offset_y;
 
-            double dx = state.x - weapon_x;
-            double dy = state.y - weapon_y;
+            double dx = mouse.x - weapon_x;
+            double dy = mouse.y - weapon_y;
             double len = sqrt(dx * dx + dy * dy);
 
             if (len != 0)
