@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include "../global.h"
 
 /*
    [Character function]
@@ -65,6 +66,18 @@ void Character_update(Elements *self)
     // update weapon direction
     ALLEGRO_MOUSE_STATE state;
     al_get_mouse_state(&state);
+
+    double dx = state.x - chara->x;
+    double dy = state.y - chara->y;
+    double len = sqrt(dx * dx + dy * dy);
+
+    if (len != 0) {
+        chara->weapon_dir_x = dx / len;
+        chara->weapon_dir_y = dy / len;
+    } else {
+        chara->weapon_dir_x = 1;
+        chara->weapon_dir_y = 0;
+    }
 
     if (chara->state == STOP)
     {
