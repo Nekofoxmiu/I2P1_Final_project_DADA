@@ -8,6 +8,9 @@
 #include <math.h>
 #include "../global.h"
 
+#define CHARA_SPEED 5
+
+
 /*
    [Character function]
 */
@@ -57,10 +60,10 @@ Elements *New_Character(int label)
 
 void Character_update(Elements *self)
 {
-    // use the idea of finite state machine to deal with different state
+    // 使用有限狀態機的概念處理不同狀態
     Character *chara = ((Character *)(self->pDerivedObj));
 
-    //解決奇怪的初始化時碰撞箱似乎不正確問題(非常醜的解法可以的話最好改掉就是)
+    // 解決奇怪的初始化時碰撞箱似乎不正確問題(非常醜的解法可以的話最好改掉就是)
     _Character_update_position(self, 0, 0);
 
     if (chara->state == STOP)
@@ -69,29 +72,9 @@ void Character_update(Elements *self)
         {
             chara->state = ATK;
         }
-        else if (key_state[ALLEGRO_KEY_A])
+        else if (key_state[ALLEGRO_KEY_A] || key_state[ALLEGRO_KEY_D] || key_state[ALLEGRO_KEY_W] || key_state[ALLEGRO_KEY_S])
         {
-            chara->dir = 'L';
             chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_D])
-        {
-            chara->dir = 'R';
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_W])
-        {
-            chara->dir = 'U';
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_S])
-        {
-            chara->dir = 'D';
-            chara->state = MOVE;
-        }
-        else
-        {
-            chara->state = STOP;
         }
     }
     else if (chara->state == MOVE)
@@ -100,32 +83,43 @@ void Character_update(Elements *self)
         {
             chara->state = ATK;
         }
-        else if (key_state[ALLEGRO_KEY_A])
+        else
         {
-            chara->dir = 'L';
-            _Character_update_position(self, -5, 0);
-            chara->state = MOVE;
+            int dx = 0, dy = 0;
+            if (key_state[ALLEGRO_KEY_A])
+            {
+                chara->dir = 'L';
+                dx -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_D])
+            {
+                chara->dir = 'R';
+                dx += 1;
+            }
+            if (key_state[ALLEGRO_KEY_W])
+            {
+                dy -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_S])
+            {
+                dy += 1;
+            }
+
+            // 計算單位移動向量並乘以固定速度
+            float speed = CHARA_SPEED;
+            float length = sqrt(dx * dx + dy * dy);
+            if (length != 0)
+            {
+                dx = (int)(dx / length * speed);
+                dy = (int)(dy / length * speed);
+            }
+
+            _Character_update_position(self, dx, dy);
+            if (!key_state[ALLEGRO_KEY_A] && !key_state[ALLEGRO_KEY_D] && !key_state[ALLEGRO_KEY_W] && !key_state[ALLEGRO_KEY_S])
+            {
+                chara->state = STOP;
+            }
         }
-        else if (key_state[ALLEGRO_KEY_D])
-        {
-            chara->dir = 'R';
-            _Character_update_position(self, 5, 0);
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_W])
-        {
-            chara->dir = 'U';
-            _Character_update_position(self, 0, -5);
-            chara->state = MOVE;
-        }
-        else if (key_state[ALLEGRO_KEY_S])
-        {
-            chara->dir = 'D';
-            _Character_update_position(self, 0, 5);
-            chara->state = MOVE;
-        }
-        if (chara->gif_status[chara->state]->done)
-            chara->state = STOP;
     }
     else if (chara->state == ATK)
     {
@@ -166,6 +160,8 @@ void Character_update(Elements *self)
         }
     }
 }
+
+
 
 void Character_draw(Elements *self)
 {
