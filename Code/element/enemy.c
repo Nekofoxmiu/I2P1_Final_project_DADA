@@ -5,8 +5,9 @@
 #include <stdlib.h>
 #include <math.h>
 
-#define MAX_DISTANCE 400
-#define CHASE_DISTANCE 200
+#define MIN_DISTANCE 400
+#define MAX_DISTANCE 600
+#define CHASE_DISTANCE 600
 #define ATTACK_DISTANCE 50
 #define CHASE_SPEED 3
 #define OK_RANGE 1
@@ -34,9 +35,9 @@ Elements *New_Enemy(int label, Character *target)
     al_set_sample_instance_playmode(pDerivedObj->atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->atk_Sound, al_get_default_mixer());
 
-    // 隨機生成初始位置在角色周遭400範圍內
+    // 隨機生成初始位置在角色周遭MAX_DISTANCE範圍內MIN_DISTANCE外
     double angle = ((double)rand() / RAND_MAX) * 2 * M_PI;
-    double radius = ((double)rand() / RAND_MAX) * MAX_DISTANCE;
+    double radius = MIN_DISTANCE + ((double)rand() / RAND_MAX) * (MAX_DISTANCE - MIN_DISTANCE);
     pDerivedObj->x = target->x + (int)(radius * cos(angle));
     pDerivedObj->y = target->y + (int)(radius * sin(angle));
 
@@ -67,7 +68,7 @@ void Enemy_update(Elements *self)
     Enemy *enemy = (Enemy *)(self->pDerivedObj);
     Character *target = enemy->target;
 
-    if(enemy->blood <= 0)
+    if (enemy->blood <= 0)
     {
         self->dele = true;
         return;
@@ -80,10 +81,10 @@ void Enemy_update(Elements *self)
     int chaseRange_x = 0;
     int chaseRange_y = 0;
 
-    //解決奇怪的初始化時碰撞箱似乎不正確問題(非常醜的解法可以的話最好改掉就是)
+    // 解決初始化時碰撞箱不正確問題
     _Enemy_update_position(self, 0, 0);
 
-    // 如果距離小於200，則進行追逐
+    // 如果距離小於 CHASE_DISTANCE，則進行追逐
     if (distance < CHASE_DISTANCE)
     {
         if (distance > ATTACK_DISTANCE)
@@ -98,38 +99,11 @@ void Enemy_update(Elements *self)
                 enemy->dir = false;
             }
 
-            if (abs(dx) < CHASE_SPEED)
+            // 正規化速度
+            if (distance != 0)
             {
-                chaseRange_x = dx;
-            }
-            else
-            {
-                if (dx & 0x80000000)
-                {
-                    //負數
-                    chaseRange_x = -CHASE_SPEED;
-                }
-                else
-                {
-                    chaseRange_x = CHASE_SPEED;
-                }
-            }
-
-            if (abs(dy) < CHASE_SPEED)
-            {
-                chaseRange_y = dy;
-            }
-            else
-            {
-                if (dy & 0x80000000)
-                {
-                    //負數
-                    chaseRange_y = -CHASE_SPEED;
-                }
-                else
-                {
-                    chaseRange_y = CHASE_SPEED;
-                }
+                chaseRange_x = (int)(CHASE_SPEED * dx / distance);
+                chaseRange_y = (int)(CHASE_SPEED * dy / distance);
             }
 
             _Enemy_update_position(self, chaseRange_x, chaseRange_y);
@@ -144,6 +118,7 @@ void Enemy_update(Elements *self)
         enemy->state = STOP;
     }
 }
+
 
 void Enemy_draw(Elements *self)
 {
