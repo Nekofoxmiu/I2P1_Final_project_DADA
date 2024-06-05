@@ -24,8 +24,6 @@ Scene *New_GameScene(int label)
     return pObj;
 }
 
-bool key_j_pressed = false;
-
 void game_scene_update(Scene *self)
 {
 
@@ -37,6 +35,12 @@ void game_scene_update(Scene *self)
         spawn_enemy = false; // set the flag indicating the key is pressed
         Elements *enemy = New_Enemy(Enemy_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
         _Register_elements(self, enemy);
+    }
+
+    if (spawn_boss) {
+        spawn_boss = false; // set the flag indicating the key is pressed
+        Elements *boss = New_Boss(Boss_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+        _Register_elements(self, boss);
     }
     
     for (int i = 0; i < allEle.len; i++)
