@@ -294,4 +294,5 @@ void _Character_update_position(Elements *self, int dx, int dy)
 void Character_interact(Elements *self, Elements *tar)
 {
     // 實現互動邏輯
+    //test
 }
