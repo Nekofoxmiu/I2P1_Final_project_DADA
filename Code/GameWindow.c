@@ -57,6 +57,11 @@ void execute(Game *self)
                 spawn_enemy = true; // 設置敵人生成標誌位
             }
 
+            if (event.keyboard.keycode == ALLEGRO_KEY_K)
+            {
+                spawn_boss = true; // 設置敵人生成標誌位
+            }
+
             break;
         }
         case ALLEGRO_EVENT_KEY_UP:
