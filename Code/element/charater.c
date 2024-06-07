@@ -6,7 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-#include "global.h"
+#include "../global.h"
 
 #define CHARA_SPEED 5
 
@@ -27,6 +27,9 @@ Elements *New_Character(int label)
         sprintf(buffer, "assets/image/chara_%s.gif", state_string[i]);
         pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
     }
+    // 角色 GIF 速度調整
+    // pDerivedObj->gif_status[ATK]->duration /= 5;
+    
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
@@ -128,6 +131,7 @@ void Character_update(Elements *self)
             chara->state = STOP;
             chara->new_proj = false;
         }
+        // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
             double offset_x = (chara->dir == 'R') ? chara->width - 50 : -50;
