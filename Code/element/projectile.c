@@ -3,7 +3,7 @@
 /*
    [Projectile function]
 */
-Elements *New_Projectile(int label, double x, double y, int v, double wx, double wy)
+Elements *New_Projectile(int label, double damage, double x, double y, int v, double wx, double wy)
 {
     Projectile *pDerivedObj = (Projectile *)malloc(sizeof(Projectile));
     Elements *pObj = New_Elements(label);
@@ -11,6 +11,7 @@ Elements *New_Projectile(int label, double x, double y, int v, double wx, double
     pDerivedObj->img = al_load_bitmap("assets/image/projectile.png");
     pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
     pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
+    pDerivedObj->damage = damage;
     pDerivedObj->x = x;
     pDerivedObj->y = y;
     pDerivedObj->v = v;
@@ -70,8 +71,13 @@ void Projectile_interact(Elements *self, Elements *tar)
         Enemy *enemy = ((Enemy *)(tar->pDerivedObj));
         if (enemy->hitbox->overlap(enemy->hitbox, Obj->hitbox))
         {
-            enemy->blood -= 5;
+            if(enemy->armor > Obj->damage)
+                enemy->blood -= 1;
+            else
+                enemy->blood -= Obj->damage - enemy->armor;
             self->dele = true;
+
+            printf("enemy blood: %f\n", enemy->blood);
         }
     }
     else if (tar->label == Boss_L)

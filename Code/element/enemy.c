@@ -4,31 +4,81 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include <string.h>
 
 #define MIN_DISTANCE 400
 #define MAX_DISTANCE 600
-#define CHASE_DISTANCE 600
-#define ATTACK_DISTANCE 50
-#define CHASE_SPEED 3
 #define OK_RANGE 1
 #define M_PI 3.14159265358979323846
 
-/*
-   [Enemy function]
-*/
-Elements *New_Enemy(int label, Character *target)
+void load_enemy_config(const char *filename, EnemyConfig configs[])
 {
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        fprintf(stderr, "Could not open config file: %s\n", filename);
+        exit(1);
+    }
+
+    char type[20], state[20], value[100];
+    while (fscanf(file, "%s %s %s", type, state, value) != EOF)
+    {
+        int enemyType = -1;
+        if (strcmp(type, "slime_L") == 0)
+            enemyType = slime_L;
+        else if (strcmp(type, "dog_L") == 0)
+            enemyType = dog_L;
+        else if (strcmp(type, "dragon_L") == 0)
+            enemyType = dragon_L;
+
+        if (enemyType != -1)
+        {
+            if (strcmp(state, "stop") == 0)
+                strcpy(configs[enemyType].stop, value);
+            else if (strcmp(state, "move") == 0)
+                strcpy(configs[enemyType].move, value);
+            else if (strcmp(state, "attack") == 0)
+                strcpy(configs[enemyType].attack, value);
+            else if (strcmp(state, "blood") == 0)
+                configs[enemyType].blood = atof(value);
+            else if (strcmp(state, "armor") == 0)
+                configs[enemyType].armor = atof(value);
+            else if (strcmp(state, "damage") == 0)
+                configs[enemyType].damage = atof(value);
+            else if (strcmp(state, "chase_distance") == 0)
+                configs[enemyType].chase_distance = atof(value);
+            else if (strcmp(state, "attack_distance") == 0)
+                configs[enemyType].attack_distance = atof(value);
+            else if (strcmp(state, "chase_speed") == 0)
+                configs[enemyType].chase_speed = atof(value);
+        }
+    }
+
+    fclose(file);
+}
+
+Elements *New_Enemy(int label, EnemyType enemyType, Character *target)
+{
+    static EnemyConfig configs[100];
+    static int configs_loaded = 0;
+
+    if (!configs_loaded)
+    {
+        load_enemy_config("config/enemy_config.txt", configs);
+        configs_loaded = 1;
+    }
+
     Enemy *pDerivedObj = (Enemy *)malloc(sizeof(Enemy));
     Elements *pObj = New_Elements(label);
 
+    // 設置敵人類型
+    pDerivedObj->type = (EnemyType)enemyType;
+
     // 加載動畫
-    char state_string[3][10] = {"stop", "move", "attack"};
-    for (int i = 0; i < 3; i++)
-    {
-        char buffer[53];
-        sprintf(buffer, "assets/image/enemy_%s.gif", state_string[i]);
-        pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
-    }
+    pDerivedObj->gif_status[0] = algif_new_gif(configs[enemyType].stop, -1);
+    pDerivedObj->gif_status[1] = algif_new_gif(configs[enemyType].move, -1);
+    pDerivedObj->gif_status[2] = algif_new_gif(configs[enemyType].attack, -1);
+
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
@@ -41,12 +91,17 @@ Elements *New_Enemy(int label, Character *target)
     pDerivedObj->x = target->x + (int)(radius * cos(angle));
     pDerivedObj->y = target->y + (int)(radius * sin(angle));
 
-    // 初始化敵人的其他成員
+    // 根據敵人類型初始化敵人的屬性
+    pDerivedObj->blood = configs[enemyType].blood;
+    pDerivedObj->armor = configs[enemyType].armor;
+    pDerivedObj->damage = configs[enemyType].damage;
+    pDerivedObj->chase_distance = configs[enemyType].chase_distance;
+    pDerivedObj->attack_distance = configs[enemyType].attack_distance;
+    pDerivedObj->chase_speed = configs[enemyType].chase_speed;
+
+    // 初始化其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
-    pDerivedObj->blood = 20;
-    pDerivedObj->armor = 1;
-    pDerivedObj->damage = 2;
     pDerivedObj->dir = true;      // 初始方向
     pDerivedObj->state = STOP;    // 初始狀態
     pDerivedObj->target = target; // 設定目標角色
@@ -84,10 +139,10 @@ void Enemy_update(Elements *self)
     // 解決初始化時碰撞箱不正確問題
     _Enemy_update_position(self, 0, 0);
 
-    // 如果距離小於 CHASE_DISTANCE，則進行追逐
-    if (distance < CHASE_DISTANCE)
+    // 如果距離小於 chase_distance，則進行追逐
+    if (distance < enemy->chase_distance)
     {
-        if (distance > ATTACK_DISTANCE)
+        if (distance > enemy->attack_distance)
         {
             enemy->state = MOVE;
             if (target->x > enemy->x)
@@ -102,8 +157,8 @@ void Enemy_update(Elements *self)
             // 正規化速度
             if (distance != 0)
             {
-                chaseRange_x = (int)(CHASE_SPEED * dx / distance);
-                chaseRange_y = (int)(CHASE_SPEED * dy / distance);
+                chaseRange_x = (int)(enemy->chase_speed * dx / distance);
+                chaseRange_y = (int)(enemy->chase_speed * dy / distance);
             }
 
             _Enemy_update_position(self, chaseRange_x, chaseRange_y);
@@ -111,6 +166,13 @@ void Enemy_update(Elements *self)
         else
         {
             enemy->state = ATK;
+            if (enemy->gif_status[enemy->state]->done)
+            {
+                if(target->armor > enemy->damage)
+                    target->blood -= 1;
+                else
+                    target->blood -= enemy->damage - target->armor;
+            }
         }
     }
     else
@@ -118,7 +180,6 @@ void Enemy_update(Elements *self)
         enemy->state = STOP;
     }
 }
-
 
 void Enemy_draw(Elements *self)
 {

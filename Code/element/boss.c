@@ -173,6 +173,7 @@ void Boss_update(Elements *self)
 
             Elements *pro;
             pro = New_Projectile(Projectile_L,
+                                boss->damage,
                                 weapon_x,
                                 weapon_y,
                                 10, boss->weapon_dir_x, boss->weapon_dir_y);

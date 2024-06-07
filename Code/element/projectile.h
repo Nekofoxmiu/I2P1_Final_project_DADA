@@ -11,11 +11,12 @@ typedef struct _Projectile
     double x, y;          // the position of image
     int width, height; // the width and height of image
     int v;             // the velocity of projectile
+    double damage;
     double wx, wy;
     ALLEGRO_BITMAP *img;
     Shape *hitbox; // the hitbox of object
 } Projectile;
-Elements *New_Projectile(int label, double x, double y, int v, double wx, double wy);
+Elements *New_Projectile(int label, double damage, double x, double y, int v, double wx, double wy);
 void Projectile_update(Elements *self);
 void Projectile_interact(Elements *self, Elements *tar);
 void Projectile_draw(Elements *self);
