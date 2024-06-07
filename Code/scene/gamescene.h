@@ -8,8 +8,10 @@
 #include "../element/teleport.h"
 #include "../element/tree.h"
 #include "../element/projectile.h"
-#include "../element/enemy.h" 
-#include "../element/boss.h" 
+#include "../element/enemy.h"
+#include "../element/boss.h"
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 
 /*
    [game scene object]
@@ -26,8 +28,9 @@ typedef enum EleType
 } EleType;
 typedef struct _GameScene
 {
+    ALLEGRO_FONT *font;
     ALLEGRO_BITMAP *background;
-
+    int chara_blood_x, chara_blood_y;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
