@@ -1,6 +1,10 @@
 {
     "cmake.ignoreCMakeListsMissing": true,
     "files.associations": {
-        "time.h": "c"
+        "time.h": "c",
+        "allegro_font.h": "c",
+        "allegro_ttf.h": "c",
+        "stdbool.h": "c",
+        "scenemanager.h": "c"
     }
 }

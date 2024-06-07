@@ -9,7 +9,7 @@
     {                                                                       \
         printf("check at line number %d in file %s\n", __LINE__, __FILE__); \
     }
-#define MAX_ELEMENT 100
+#define MAX_ELEMENT 1000
 #define min(x, y) ((x) > (y) ? (y) : (x))
 #define max(x, y) ((x) < (y) ? (y) : (x))
 // note that you can't assign initial value for extern variable!
