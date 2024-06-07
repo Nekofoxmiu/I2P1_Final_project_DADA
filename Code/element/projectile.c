@@ -19,10 +19,10 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     pDerivedObj->vdx = vdx;
     pDerivedObj->vdy = vdy;
     // make sure it's a unit vector
-    if (vdx * vdx + vdy * vdy > 1.0) {
-        fprintf(stderr, "Error: The vector is not a unit vector.");
-        exit(EXIT_FAILURE);
-    }
+    // if (vdx * vdx + vdy * vdy > 1.0) {
+    //     fprintf(stderr, "Error: The vector is not a unit vector.");
+    //     exit(EXIT_FAILURE);
+    // }
 
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 2,
                                      pDerivedObj->y + pDerivedObj->height / 2,

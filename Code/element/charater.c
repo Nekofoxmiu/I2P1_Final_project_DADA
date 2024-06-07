@@ -123,7 +123,7 @@ void Character_update(Elements *self)
 
     if (chara->state == STOP)
     {
-        if (key_state[ALLEGRO_KEY_SPACE])
+        if (mouse_state[ALLEGRO_EVENT_MOUSE_BUTTON_DOWN])
         {
             chara->state = ATK;
         }
@@ -134,7 +134,7 @@ void Character_update(Elements *self)
     }
     else if (chara->state == MOVE)
     {
-        if (key_state[ALLEGRO_KEY_SPACE])
+        if (mouse_state[ALLEGRO_EVENT_MOUSE_BUTTON_DOWN])
         {
             chara->state = ATK;
         }
@@ -218,28 +218,29 @@ void Character_update(Elements *self)
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
-            double offset_x = (chara->dir == 'R') ? chara->width - 50 : -50;
-            double offset_y = 10;
-            double weapon_x = chara->x + offset_x;
-            double weapon_y = chara->y + offset_y;
 
-            double dx = mouse.x - weapon_x;
-            double dy = mouse.y - weapon_y;
+            double dx = mouse.x - chara->x;
+            double dy = mouse.y - chara->y;
             double len = sqrt(dx * dx + dy * dy);
 
             if (len != 0)
             {
-                chara->weapon_dir_x = dx / len;
-                chara->weapon_dir_y = dy / len;
+                dx /= len;
+                dy /= len;
             }
             else
             {
-                chara->weapon_dir_x = 1;
-                chara->weapon_dir_y = 0;
+                dx = 0.7;
+                dy = 0.7;
             }
 
+            double offset_x = 3 * dx;
+            double offset_y = 3 * dy;
+            double weapon_x = chara->x + offset_x;
+            double weapon_y = chara->y + offset_y;
+
             Elements *pro;
-            pro = New_Projectile(self, Projectile_L, chara->damage, weapon_x, weapon_y, 10, chara->weapon_dir_x, chara->weapon_dir_y);
+            pro = New_Projectile(self, Projectile_L, chara->damage, weapon_x, weapon_y, 10, dx, dy);
             _Register_elements(scene, pro);
             chara->new_proj = true;
         }

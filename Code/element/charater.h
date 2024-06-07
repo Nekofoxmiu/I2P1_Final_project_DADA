@@ -41,7 +41,7 @@ typedef struct _Character
     int x, y;
     int width, height; // the width and height of image
     char dir;          // 'L' for left, 'R' for right
-    double weapon_dir_x, weapon_dir_y;
+    double weapon_dir_x, weapon_dir_y; // rotation of the weapon
     int state;                      // the state of character
     ALGIF_ANIMATION *gif_status[3]; // gif for each state. 0: stop, 1: move, 2:attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;
