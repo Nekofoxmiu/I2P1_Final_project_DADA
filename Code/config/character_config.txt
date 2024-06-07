@@ -1,0 +1,15 @@
+default_chara_L stop assets/image/chara_stop.gif
+default_chara_L move assets/image/chara_move.gif
+default_chara_L attack assets/image/chara_attack.gif
+default_chara_L blood 100
+default_chara_L armor 1
+default_chara_L damage 100
+default_chara_L speed 5
+
+fire_chara_L stop assets/image/chara_stop.gif
+fire_chara_L move assets/image/chara_move.gif
+fire_chara_L attack assets/image/chara_attack.gif
+fire_chara_L blood 100
+fire_chara_L armor 1
+fire_chara_L damage 5
+fire_chara_L speed 5

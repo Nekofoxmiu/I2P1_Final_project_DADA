@@ -1,0 +1,29 @@
+slime_L stop assets/image/enemy_stop.gif
+slime_L move assets/image/enemy_move.gif
+slime_L attack assets/image/enemy_attack.gif
+slime_L blood 20
+slime_L armor 1
+slime_L damage 2
+slime_L chase_distance 600
+slime_L attack_distance 50
+slime_L chase_speed 2
+
+dog_L stop assets/image/dog_stop.gif
+dog_L move assets/image/dog_move.gif
+dog_L attack assets/image/dog_attack.gif
+dog_L blood 30
+dog_L armor 2
+dog_L damage 4
+dog_L chase_distance 600
+dog_L attack_distance 50
+dog_L chase_speed 2
+
+dragon_L stop assets/image/dragon_stop.gif
+dragon_L move assets/image/dragon_move.gif
+dragon_L attack assets/image/dragon_attack.gif
+dragon_L blood 50
+dragon_L armor 5
+dragon_L damage 10
+dragon_L chase_distance 600
+dragon_L attack_distance 50
+dragon_L chase_speed 2
