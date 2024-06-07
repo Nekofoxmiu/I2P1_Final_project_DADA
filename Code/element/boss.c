@@ -172,7 +172,7 @@ void Boss_update(Elements *self)
             }
 
             Elements *pro;
-            pro = New_Projectile(Projectile_L,
+            pro = New_Projectile(self, Projectile_L,
                                 boss->damage,
                                 weapon_x,
                                 weapon_y,

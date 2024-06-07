@@ -45,6 +45,9 @@ void Floor_interact(Elements *self, Elements *tar)
         Character *chara = (Character *)(tar->pDerivedObj);
         int right_limit = WIDTH - chara->width / 2;
         int left_limit = 0 - chara->width / 2;
+        int up_limit = 0 - chara->height / 2;
+        int down_limit = HEIGHT - chara->height / 2;
+
         if (chara->x < left_limit)
         {
             _Character_update_position(tar, (left_limit - chara->x), 0);
@@ -52,6 +55,12 @@ void Floor_interact(Elements *self, Elements *tar)
         else if (chara->x > right_limit)
         {
             _Character_update_position(tar, (right_limit - chara->x), 0);
+        }
+        else if (chara->y < up_limit) {
+            _Character_update_position(tar, 0, (up_limit - chara->y));
+        }
+        else if (chara->y > down_limit) {
+            _Character_update_position(tar, 0, (down_limit - chara->y));
         }
     }
 }

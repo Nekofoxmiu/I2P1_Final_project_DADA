@@ -239,7 +239,7 @@ void Character_update(Elements *self)
             }
 
             Elements *pro;
-            pro = New_Projectile(Projectile_L,chara->damage, weapon_x, weapon_y, 10, chara->weapon_dir_x, chara->weapon_dir_y);
+            pro = New_Projectile(self, Projectile_L, chara->damage, weapon_x, weapon_y, 10, chara->weapon_dir_x, chara->weapon_dir_y);
             _Register_elements(scene, pro);
             chara->new_proj = true;
         }

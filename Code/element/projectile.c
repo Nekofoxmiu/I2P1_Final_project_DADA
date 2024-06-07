@@ -3,7 +3,7 @@
 /*
    [Projectile function]
 */
-Elements *New_Projectile(int label, double damage, double x, double y, int v, double wx, double wy)
+Elements *New_Projectile(Elements *creator, int label, double damage, double x, double y, int v, double vdx, double vdy)
 {
     Projectile *pDerivedObj = (Projectile *)malloc(sizeof(Projectile));
     Elements *pObj = New_Elements(label);
@@ -15,16 +15,30 @@ Elements *New_Projectile(int label, double damage, double x, double y, int v, do
     pDerivedObj->x = x;
     pDerivedObj->y = y;
     pDerivedObj->v = v;
-    pDerivedObj->wx = wx;
-    pDerivedObj->wy = wy;
+
+    pDerivedObj->vdx = vdx;
+    pDerivedObj->vdy = vdy;
+    // make sure it's a unit vector
+    if (vdx * vdx + vdy * vdy > 1.0) {
+        fprintf(stderr, "Error: The vector is not a unit vector.");
+        exit(EXIT_FAILURE);
+    }
+
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 2,
                                      pDerivedObj->y + pDerivedObj->height / 2,
                                      min(pDerivedObj->width, pDerivedObj->height) / 2);
+    
     // setting the interact object
+    if (creator->label == Character_L) {
+        pObj->inter_obj[pObj->inter_len++] = Enemy_L;
+        pObj->inter_obj[pObj->inter_len++] = Boss_L;
+    }
+    else if (creator->label == Enemy_L || creator->label == Boss_L) {
+        pObj->inter_obj[pObj->inter_len++] = Character_L;
+    }
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
     pObj->inter_obj[pObj->inter_len++] = Floor_L;
-    pObj->inter_obj[pObj->inter_len++] = Enemy_L;
-    pObj->inter_obj[pObj->inter_len++] = Boss_L;
+
     // setting derived object function
     pObj->pDerivedObj = pDerivedObj;
     pObj->Update = Projectile_update;
@@ -37,7 +51,7 @@ Elements *New_Projectile(int label, double damage, double x, double y, int v, do
 void Projectile_update(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    _Projectile_update_position(self, Obj->v * Obj->wx, Obj->v * Obj->wy);
+    _Projectile_update_position(self, Obj->v * Obj->vdx, Obj->v * Obj->vdy);
 }
 void _Projectile_update_position(Elements *self, double dx, double dy)
 {
@@ -66,15 +80,31 @@ void Projectile_interact(Elements *self, Elements *tar)
             self->dele = true;
         }
     }
+    else if (tar->label == Character_L)
+    {
+        Character *character = ((Character *)(tar->pDerivedObj));
+        if (character->hitbox->overlap(character->hitbox, Obj->hitbox))
+        {
+            if (character->armor > Obj->damage) {
+                character->blood -= 1;
+            }
+            else {
+                character->blood -= Obj->damage - character->armor;
+            }
+            self->dele = true;
+        }
+    }
     else if (tar->label == Enemy_L)
     {
         Enemy *enemy = ((Enemy *)(tar->pDerivedObj));
         if (enemy->hitbox->overlap(enemy->hitbox, Obj->hitbox))
         {
-            if(enemy->armor > Obj->damage)
+            if(enemy->armor > Obj->damage) {
                 enemy->blood -= 1;
-            else
+            }
+            else {
                 enemy->blood -= Obj->damage - enemy->armor;
+            }
             self->dele = true;
 
             printf("enemy blood: %f\n", enemy->blood);
