@@ -123,7 +123,7 @@ void Character_update(Elements *self)
 
     if (chara->state == STOP)
     {
-        if (mouse_state[ALLEGRO_EVENT_MOUSE_BUTTON_DOWN])
+        if (key_state[ALLEGRO_KEY_SPACE])
         {
             chara->state = ATK;
         }
@@ -134,7 +134,7 @@ void Character_update(Elements *self)
     }
     else if (chara->state == MOVE)
     {
-        if (mouse_state[ALLEGRO_EVENT_MOUSE_BUTTON_DOWN])
+        if (key_state[ALLEGRO_KEY_SPACE])
         {
             chara->state = ATK;
         }
