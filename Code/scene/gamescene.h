@@ -10,6 +10,7 @@
 #include "../element/projectile.h"
 #include "../element/enemy.h"
 #include "../element/boss.h"
+#include "../element/wall.h"
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
 
@@ -18,6 +19,7 @@
 */
 typedef enum EleType
 {
+    Wall_L,
     Floor_L,
     Teleport_L,
     Tree_L,
