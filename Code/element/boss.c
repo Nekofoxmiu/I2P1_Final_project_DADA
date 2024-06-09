@@ -151,8 +151,8 @@ void Boss_update(Elements *self)
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (boss->gif_status[ATK]->display_index == 2 && boss->new_proj == false)
         {
-            Attack_Radial(self, 10, 5, 2);
-            // Attack_Normal(self, 2, 5, true);
+            // Attack_Radial(self, 10, 5, 2);
+            Attack_Normal(self, 2, 5, true);
             boss->new_proj = true;
         }
     }

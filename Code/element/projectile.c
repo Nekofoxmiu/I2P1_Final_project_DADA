@@ -57,8 +57,7 @@ void Projectile_update(Elements *self)
             double dx = target->x - Obj->x;
             double dy = target->y - Obj->y;
 
-            // prevent overflow normalization
-            if (dx <= 0.05 || dy <= 0.05) return;
+            if (dx <= 20 || dy <= 20) Obj->chase = false;
 
             NormalizeV(&dx, &dy);
             Obj->vdx = dx;
