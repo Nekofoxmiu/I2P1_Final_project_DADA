@@ -91,6 +91,9 @@ Elements *New_Character(int label, CharacterType charaType)
                                         pDerivedObj->y + pDerivedObj->height);
     pDerivedObj->dir = 'L'; // 初始方向
 
+    // setting the interact object
+    pObj->inter_obj[pObj->inter_len++] = Tree_L;
+
     // 根據配置文件初始化屬性
     pDerivedObj->blood = configs[charaType].blood;
     pDerivedObj->armor = configs[charaType].armor;
@@ -295,6 +298,24 @@ void _Character_update_position(Elements *self, int dx, int dy)
 
 void Character_interact(Elements *self, Elements *tar)
 {
-    // 實現互動邏輯
-    //test
+    Character *chara = ((Character *)(self->pDerivedObj));
+    if (tar->label == Tree_L)
+    {
+        Tree *tree = ((Tree *)(tar->pDerivedObj));
+        if (tree->hitbox->overlap(tree->hitbox, chara->hitbox))
+        {
+            if(chara->x > tree->x){
+                _Character_update_position(self, 5, 0);
+            }
+            if(chara->x < tree->x){
+                _Character_update_position(self, -5, 0);
+            }
+            if(chara->y > tree->y){
+                _Character_update_position(self, 0, 5);
+            }
+            if(chara->y < tree->y){
+                _Character_update_position(self, 0, -5);
+            }
+        }
+    }
 }
