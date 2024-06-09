@@ -1,5 +1,5 @@
-#ifndef FLOOR_H_INCLUDED
-#define FLOOR_H_INCLUDED
+#ifndef WALL_H_INCLUDED
+#define WALL_H_INCLUDED
 #include "element.h"
 #include "charater.h"
 #include "enemy.h"
@@ -24,5 +24,6 @@ void Wall_update(Elements *self);
 void Wall_interact(Elements *self, Elements *tar);
 void Wall_draw(Elements *self);
 void Wall_destroy(Elements *self);
+void _handle_collision(Elements *self, Elements *tar, void (*update_position)(Elements *, int, int));
 
 #endif

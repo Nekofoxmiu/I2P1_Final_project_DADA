@@ -62,6 +62,11 @@ void execute(Game *self)
                 spawn_boss = true; // 設置敵人生成標誌位
             }
 
+            if (event.keyboard.keycode == ALLEGRO_KEY_L)
+            {
+                spawn_wall = true; // 設置牆壁生成標誌位
+            }
+
             break;
         }
         case ALLEGRO_EVENT_KEY_UP:
