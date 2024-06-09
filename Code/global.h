@@ -26,4 +26,5 @@ extern ALLEGRO_TIMER *fps;
 extern bool debug_mode;
 extern bool spawn_enemy;
 extern bool spawn_boss;
+extern bool spawn_wall;
 #endif

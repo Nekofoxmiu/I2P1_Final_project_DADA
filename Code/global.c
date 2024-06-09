@@ -15,3 +15,4 @@ Point mouse;
 bool debug_mode = true;
 bool spawn_enemy = false;
 bool spawn_boss = false;
+bool spawn_wall = false;

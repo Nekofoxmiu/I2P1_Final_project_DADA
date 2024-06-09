@@ -50,6 +50,13 @@ void game_scene_update(Scene *self)
         _Register_elements(self, boss);
     }
 
+    if (spawn_wall)
+    {
+        spawn_wall = false; // set the flag indicating the key is pressed
+        Elements *wall = New_Wall(Wall_L, mouse.x, mouse.y);
+        _Register_elements(self, wall);
+    }
+
     for (int i = 0; i < allEle.len; i++)
     {
         allEle.arr[i]->Update(allEle.arr[i]);

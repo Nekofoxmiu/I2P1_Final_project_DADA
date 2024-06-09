@@ -38,7 +38,7 @@ Elements *New_Wall(int label, int x, int y)
 
 void Wall_update(Elements *ele) {}
 
-void handle_collision(Elements *self, Elements *tar, void (*update_position)(Elements*, int, int))
+void _handle_collision(Elements *self, Elements *tar, void (*update_position)(Elements*, int, int))
 {
     Wall *wall = (Wall *)(self->pDerivedObj);
 
@@ -75,10 +75,10 @@ void handle_collision(Elements *self, Elements *tar, void (*update_position)(Ele
     }
 
     // 計算角色和牆體的位置和尺寸
-    int chara_left = chara_x;
-    int chara_right = chara_x + chara_width;
-    int chara_top = chara_y;
-    int chara_bottom = chara_y + chara_height;
+    int chara_left = chara_x + (chara_width >> 2);
+    int chara_right = chara_x + chara_width - (chara_width >> 2);
+    int chara_top = chara_y + (chara_height >> 2);
+    int chara_bottom = chara_y + chara_height - (chara_height >> 2);
 
     int wall_left = wall->x;
     int wall_right = wall->x + wall->width;
@@ -119,15 +119,15 @@ void Wall_interact(Elements *self, Elements *tar)
 {
     if (tar->label == Character_L)
     {
-        handle_collision(self, tar, _Character_update_position);
+        _handle_collision(self, tar, _Character_update_position);
     }
     else if (tar->label == Enemy_L)
     {
-        handle_collision(self, tar, _Enemy_update_position);
+        _handle_collision(self, tar, _Enemy_update_position);
     }
     else if (tar->label == Boss_L)
     {
-        handle_collision(self, tar, _Boss_update_position);
+        _handle_collision(self, tar, _Boss_update_position);
     }
     else if (tar->label == Projectile_L)
     {
@@ -135,10 +135,10 @@ void Wall_interact(Elements *self, Elements *tar)
         Wall *wall = (Wall *)(self->pDerivedObj);
 
         // 計算敵人和牆體的位置和尺寸
-        int proj_left = proj->x;
-        int proj_right = proj->x + proj->width;
-        int proj_top = proj->y;
-        int proj_bottom = proj->y + proj->height;
+        int proj_left = proj->x + (proj->width >> 2);
+        int proj_right = proj->x + proj->width - (proj->width >> 2);
+        int proj_top = proj->y + (proj->height >> 2);
+        int proj_bottom = proj->y + proj->height - (proj->height >> 2);
 
         int wall_left = wall->x;
         int wall_right = wall->x + wall->width;
@@ -148,7 +148,7 @@ void Wall_interact(Elements *self, Elements *tar)
         // 檢查投射物是否碰到牆體，如果是的話刪除投射物
         if (proj_right > wall_left && proj_left < wall_right && proj_bottom > wall_top && proj_top < wall_bottom)
         {
-            
+            tar->dele = true;
         }
     }
     else
