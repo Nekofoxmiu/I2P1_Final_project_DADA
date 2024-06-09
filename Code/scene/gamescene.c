@@ -82,7 +82,10 @@ void game_scene_draw(Scene *self)
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
-    al_draw_bitmap(gs->background, 0, 0, 0);
+    al_draw_scaled_bitmap(gs->background,
+                          0, 0, WIDTH, HEIGHT,
+                          0, 0, WORLD_WIDTH, WORLD_HEIGHT,
+                          0);
     ElementVec allEle = _Get_all_elements(self);
     for (int i = 0; i < allEle.len; i++)
     {

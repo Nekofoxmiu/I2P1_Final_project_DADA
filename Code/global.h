@@ -16,6 +16,8 @@
 extern const double FPS;
 extern const int WIDTH;
 extern const int HEIGHT;
+extern const int WORLD_WIDTH;
+extern const int WORLD_HEIGHT;
 extern int window;
 extern bool key_state[ALLEGRO_KEY_MAX];
 extern bool mouse_state[ALLEGRO_MOUSE_MAX_EXTRA_AXES];
