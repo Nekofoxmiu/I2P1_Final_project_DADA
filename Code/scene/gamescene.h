@@ -17,16 +17,22 @@
 /*
    [game scene object]
 */
+/*
+    如果要新增元素，請在這裡新增
+    如果是要在遊戲初始就通過註冊事件生成的請注意順序gamescene.c中註冊順序
+    否則不能使用_Get_all_elements(self).arr[enum number]->pDerivedObj直接取得
+    而須改用_Get_label_elements(self, enum number)取得陣列後在取得
+*/
 typedef enum EleType
 {
-    Wall_L,
     Floor_L,
     Teleport_L,
     Tree_L,
     Character_L,
     Enemy_L,
     Boss_L,
-    Projectile_L
+    Projectile_L,
+    Wall_L
 } EleType;
 typedef struct _GameScene
 {
@@ -38,5 +44,6 @@ Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
 void game_scene_draw(Scene *self);
 void game_scene_destroy(Scene *self);
+void update_camera(Character *chara);
 
 #endif

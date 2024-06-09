@@ -31,6 +31,17 @@ Scene *New_GameScene(int label)
     return pObj;
 }
 
+void update_camera(Character *chara){
+    camera_x = chara->x - WIDTH / 2;
+    camera_y = chara->y - HEIGHT / 2;
+
+    // prevent camera from exceeding world width/height
+    if (camera_x < 0) camera_x = 0;
+    if (camera_y < 0) camera_y = 0;
+    if (camera_x > WORLD_WIDTH - WIDTH) camera_x = WORLD_WIDTH - WIDTH;
+    if (camera_y > WORLD_HEIGHT - HEIGHT) camera_y = WORLD_HEIGHT - HEIGHT;
+}
+
 void game_scene_update(Scene *self)
 {
     // update every element
@@ -70,6 +81,10 @@ void game_scene_update(Scene *self)
             }
         }
     }
+
+    // update camera
+    update_camera((Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+
     // remove element
     for (int i = 0; i < allEle.len; i++)
     {
@@ -82,7 +97,10 @@ void game_scene_draw(Scene *self)
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
-    al_draw_bitmap(gs->background, 0, 0, 0);
+    al_draw_scaled_bitmap(gs->background,
+                          0, 0, WIDTH, HEIGHT,
+                          0, 0, WORLD_WIDTH, WORLD_HEIGHT,
+                          0);
     ElementVec allEle = _Get_all_elements(self);
     for (int i = 0; i < allEle.len; i++)
     {
