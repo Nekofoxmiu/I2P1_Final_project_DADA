@@ -8,6 +8,8 @@ const int HEIGHT = 672;
 // world size
 const int WORLD_WIDTH = 2700;
 const int WORLD_HEIGHT = 2016;
+float camera_x = 0;
+float camera_y = 0;
 int window = 0;
 ALLEGRO_EVENT_QUEUE *event_queue = NULL;
 ALLEGRO_EVENT event;

@@ -38,5 +38,6 @@ Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
 void game_scene_draw(Scene *self);
 void game_scene_destroy(Scene *self);
+void update_camera(Character *chara);
 
 #endif
