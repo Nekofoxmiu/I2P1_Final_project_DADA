@@ -5,7 +5,7 @@
 #include "../element/element.h"
 #include "../element/charater.h"
 #include "../element/floor.h"
-#include "../element/teleport.h"
+//#include "../element/teleport.h"
 #include "../element/tree.h"
 #include "../element/projectile.h"
 #include "../element/enemy.h"
@@ -26,7 +26,7 @@
 typedef enum EleType
 {
     Floor_L,
-    Teleport_L,
+    //Teleport_L,
     Tree_L,
     Character_L,
     Enemy_L,

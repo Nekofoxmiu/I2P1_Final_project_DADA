@@ -18,7 +18,7 @@ Scene *New_GameScene(int label)
     pDerivedObj->chara_blood_y = 30;
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
-    _Register_elements(pObj, New_Teleport(Teleport_L));
+    //_Register_elements(pObj, New_Teleport(Teleport_L));
     _Register_elements(pObj, New_Tree(Tree_L));
     Elements *character = New_Character(Character_L, default_chara_L);
     _Register_elements(pObj, character);
