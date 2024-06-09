@@ -5,6 +5,9 @@
         "allegro_font.h": "c",
         "allegro_ttf.h": "c",
         "stdbool.h": "c",
-        "scenemanager.h": "c"
+        "scenemanager.h": "c",
+        "charater.h": "c",
+        "boss.h": "c",
+        "projectile.h": "c"
     }
 }
