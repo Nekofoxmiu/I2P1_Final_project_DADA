@@ -28,7 +28,7 @@ typedef struct _Boss
 Elements *New_Boss(int label, Character *target);
 void _Boss_update_position(Elements *self, int dx, int dy);
 void Boss_update(Elements *self);
-void Boss_draw(Elements *self);
+void Boss_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Boss_destroy(Elements *self);
 
 #endif

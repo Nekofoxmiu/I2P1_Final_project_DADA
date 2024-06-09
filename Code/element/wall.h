@@ -22,7 +22,7 @@ typedef struct _Wall
 Elements *New_Wall(int label, int x, int y);
 void Wall_update(Elements *self);
 void Wall_interact(Elements *self, Elements *tar);
-void Wall_draw(Elements *self);
+void Wall_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Wall_destroy(Elements *self);
 void _handle_collision(Elements *self, Elements *tar, void (*update_position)(Elements *, int, int));
 

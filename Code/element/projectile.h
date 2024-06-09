@@ -24,7 +24,7 @@ typedef struct _Projectile
 Elements *New_Projectile(Elements *creator, int label, double damage, double x, double y, int v, double vdx, double vdy, bool chase);
 void Projectile_update(Elements *self);
 void Projectile_interact(Elements *self, Elements *tar);
-void Projectile_draw(Elements *self);
+void Projectile_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Projectile_destory(Elements *self);
 void _Projectile_update_position(Elements *self, double dx, double dy);
 
