@@ -60,7 +60,7 @@ Elements *New_Character(int label, CharacterType charaType);
 void _Character_update_position(Elements *self, int dx, int dy);
 void Character_update(Elements *self);
 void Character_interact(Elements *self, Elements *target);
-void Character_draw(Elements *self);
+void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Character_destory(Elements *self);
 void Character_get_position(Elements *self, float *x, float *y);
 void load_character_config(const char *filename, CharacterConfig config[]);

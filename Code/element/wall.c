@@ -158,10 +158,11 @@ void Wall_interact(Elements *self, Elements *tar)
 
 }
 
-void Wall_draw(Elements *self)
+void Wall_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Wall *Obj = ((Wall *)(self->pDerivedObj));
-    al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
 }
 
 void Wall_destroy(Elements *self)

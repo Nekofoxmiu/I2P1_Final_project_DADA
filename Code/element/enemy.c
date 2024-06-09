@@ -181,13 +181,14 @@ void Enemy_update(Elements *self)
     }
 }
 
-void Enemy_draw(Elements *self)
+void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Enemy *enemy = (Enemy *)(self->pDerivedObj);
     ALLEGRO_BITMAP *frame = algif_get_bitmap(enemy->gif_status[enemy->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, enemy->x, enemy->y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        //al_draw_bitmap(frame, enemy->x, enemy->y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, enemy->x - camera_offset_x, enemy->y - camera_offset_y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (enemy->state == ATK && enemy->gif_status[enemy->state]->display_index == 2)
     {

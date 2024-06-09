@@ -25,13 +25,15 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 2,
                                      pDerivedObj->y + pDerivedObj->height / 2,
                                      min(pDerivedObj->width, pDerivedObj->height) / 2);
-    
+
     // setting the interact object
-    if (creator->label == Character_L) {
+    if (creator->label == Character_L)
+    {
         pObj->inter_obj[pObj->inter_len++] = Enemy_L;
         pObj->inter_obj[pObj->inter_len++] = Boss_L;
     }
-    else if (creator->label == Enemy_L || creator->label == Boss_L) {
+    else if (creator->label == Enemy_L || creator->label == Boss_L)
+    {
         pObj->inter_obj[pObj->inter_len++] = Character_L;
     }
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
@@ -51,15 +53,18 @@ void Projectile_update(Elements *self)
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     _Projectile_update_position(self, Obj->v * Obj->vdx, Obj->v * Obj->vdy);
 
-    if (Obj->chase) {
-        if (Obj->creator->label == Boss_L || Obj->creator->label == Enemy_L) {
-            Boss* boss = (Boss*) Obj->creator->pDerivedObj;
-            Character* target = boss->target;
+    if (Obj->chase)
+    {
+        if (Obj->creator->label == Boss_L || Obj->creator->label == Enemy_L)
+        {
+            Boss *boss = (Boss *)Obj->creator->pDerivedObj;
+            Character *target = boss->target;
 
             double dx = target->x - Obj->x;
             double dy = target->y - Obj->y;
 
-            if (dx <= 20 || dy <= 20) Obj->chase = false;
+            if (dx <= 20 || dy <= 20)
+                Obj->chase = false;
 
             NormalizeV(&dx, &dy);
             Obj->vdx = dx;
@@ -83,7 +88,11 @@ void Projectile_interact(Elements *self, Elements *tar)
     {
         if (Obj->x < 0 - Obj->width)
             self->dele = true;
-        else if (Obj->x > WIDTH + Obj->width)
+        if (Obj->x > WORLD_WIDTH + Obj->width)
+            self->dele = true;
+        if (Obj->y < 0 - Obj->height)
+            self->dele = true;
+        if (Obj->y > WORLD_HEIGHT + Obj->height)
             self->dele = true;
     }
     else if (tar->label == Tree_L)
@@ -99,10 +108,12 @@ void Projectile_interact(Elements *self, Elements *tar)
         Character *character = ((Character *)(tar->pDerivedObj));
         if (character->hitbox->overlap(character->hitbox, Obj->hitbox))
         {
-            if (character->armor > Obj->damage) {
+            if (character->armor > Obj->damage)
+            {
                 character->blood -= 1;
             }
-            else {
+            else
+            {
                 character->blood -= Obj->damage - character->armor;
             }
             self->dele = true;
@@ -113,10 +124,12 @@ void Projectile_interact(Elements *self, Elements *tar)
         Enemy *enemy = ((Enemy *)(tar->pDerivedObj));
         if (enemy->hitbox->overlap(enemy->hitbox, Obj->hitbox))
         {
-            if(enemy->armor > Obj->damage) {
+            if (enemy->armor > Obj->damage)
+            {
                 enemy->blood -= 1;
             }
-            else {
+            else
+            {
                 enemy->blood -= Obj->damage - enemy->armor;
             }
             self->dele = true;
@@ -129,10 +142,12 @@ void Projectile_interact(Elements *self, Elements *tar)
         Boss *boss = ((Boss *)(tar->pDerivedObj));
         if (boss->hitbox->overlap(boss->hitbox, Obj->hitbox))
         {
-            if(boss->armor > Obj->damage) {
+            if (boss->armor > Obj->damage)
+            {
                 boss->blood -= 1;
             }
-            else {
+            else
+            {
                 boss->blood -= Obj->damage - boss->armor;
             }
             self->dele = true;
@@ -141,13 +156,19 @@ void Projectile_interact(Elements *self, Elements *tar)
         }
     }
 }
-void Projectile_draw(Elements *self)
+void Projectile_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     if (Obj->v > 0)
-        al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
+    {
+        // al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
+        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, ALLEGRO_FLIP_HORIZONTAL);
+    }
     else
-        al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    {
+        //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
+    }
 }
 void Projectile_destory(Elements *self)
 {
@@ -158,7 +179,8 @@ void Projectile_destory(Elements *self)
     free(self);
 }
 
-void Attack_Normal(Elements* creator, int num_bullets, int speed, bool chase) {
+void Attack_Normal(Elements *creator, int num_bullets, int speed, bool chase)
+{
 
     double dx = 0;
     double dy = 0;
@@ -168,38 +190,42 @@ void Attack_Normal(Elements* creator, int num_bullets, int speed, bool chase) {
 
     double damage = 0;
 
-    if (creator->label == Boss_L) {
+    if (creator->label == Boss_L)
+    {
         Boss *boss = (Boss *)(creator->pDerivedObj);
         Character *target = boss->target;
-        dx = target->x - boss->x;
-        dy = target->y - boss->y;
         startx = boss->x;
         starty = boss->y;
+        dx = target->x - startx;
+        dy = target->y - starty;
         damage = boss->damage;
     }
-    else if (creator->label == Enemy_L) {
-        Enemy* enemy = (Enemy *)(creator->pDerivedObj);
+    else if (creator->label == Enemy_L)
+    {
+        Enemy *enemy = (Enemy *)(creator->pDerivedObj);
         Character *target = enemy->target;
-        dx = target->x - enemy->x;
-        dy = target->y - enemy->y;
         startx = enemy->x;
         starty = enemy->y;
+        dx = target->x - startx;
+        dy = target->y - starty;
         damage = enemy->damage;
     }
-    else if (creator->label == Character_L) {
-        Character* chara = creator->pDerivedObj;
-        dx = mouse.x - chara->x;
-        dy = mouse.y - chara->y;
+    else if (creator->label == Character_L)
+    {
+        Character *chara = creator->pDerivedObj;
         startx = chara->x;
         starty = chara->y;
+        dx = mouse.x + camera_x - startx;
+        dy = mouse.y + camera_y - starty;
         damage = chara->damage;
     }
-    
+
     NormalizeV(&dx, &dy);
 
     double spacing = 80.0;
 
-    for (int i = 0; i < num_bullets; i++) {
+    for (int i = 0; i < num_bullets; i++)
+    {
         double offset = i * spacing;
         double bullet_x = startx + dx * offset;
         double bullet_y = starty + dy * offset;
@@ -209,35 +235,41 @@ void Attack_Normal(Elements* creator, int num_bullets, int speed, bool chase) {
     }
 }
 
-void Attack_Radial(Elements* creator, int num_bullets, int speed, int rounds) {
+void Attack_Radial(Elements *creator, int num_bullets, int speed, int rounds)
+{
 
     double center_x = 0;
     double center_y = 0;
     double radius = 50.0;
     double damage = 0;
 
-    if (creator->label == Boss_L) {
+    if (creator->label == Boss_L)
+    {
         Boss *boss = (Boss *)(creator->pDerivedObj);
         center_x = boss->x;
         center_y = boss->y;
         damage = boss->damage;
     }
-    else if (creator->label == Enemy_L) {
-        Enemy* enemy = (Enemy *)(creator->pDerivedObj);
+    else if (creator->label == Enemy_L)
+    {
+        Enemy *enemy = (Enemy *)(creator->pDerivedObj);
         center_x = enemy->x;
         center_y = enemy->y;
         damage = enemy->damage;
     }
-    else if (creator->label == Character_L) {
-        Character* chara = creator->pDerivedObj;
+    else if (creator->label == Character_L)
+    {
+        Character *chara = creator->pDerivedObj;
         center_x = chara->x;
         center_y = chara->y;
         damage = chara->damage;
     }
 
-    for (int r = 0; r < rounds; r++) {
+    for (int r = 0; r < rounds; r++)
+    {
         double offset = r * radius;
-        for (int i = 0; i < num_bullets; i++) {
+        for (int i = 0; i < num_bullets; i++)
+        {
             double angle = (2 * M_PI / num_bullets) * i;
             double dx = cos(angle);
             double dy = sin(angle);

@@ -158,13 +158,14 @@ void Boss_update(Elements *self)
     }
 }
 
-void Boss_draw(Elements *self)
+void Boss_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Boss *boss = (Boss *)(self->pDerivedObj);
     ALLEGRO_BITMAP *frame = algif_get_bitmap(boss->gif_status[boss->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, boss->x, boss->y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        //al_draw_bitmap(frame, boss->x, boss->y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, boss->x - camera_offset_x, boss->y - camera_offset_y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (boss->state == ATK && boss->gif_status[boss->state]->display_index == 2)
     {
