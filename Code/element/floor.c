@@ -43,10 +43,10 @@ void Floor_interact(Elements *self, Elements *tar)
     if (tar->label == Character_L)
     {
         Character *chara = (Character *)(tar->pDerivedObj);
-        int right_limit = WIDTH - chara->width / 2;
+        int right_limit = WORLD_WIDTH - chara->width / 2;
         int left_limit = 0 - chara->width / 2;
         int up_limit = 0 - chara->height / 2;
-        int down_limit = HEIGHT - chara->height / 2;
+        int down_limit = WORLD_HEIGHT - chara->height / 2;
 
         if (chara->x < left_limit)
         {

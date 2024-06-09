@@ -25,5 +25,5 @@ struct _Elements
     fptrEleGetPosition GetPosition;
 };
 Elements *New_Elements(int label);
-
+void NormalizeV(double *dx, double *dy);
 #endif

@@ -91,6 +91,9 @@ Elements *New_Character(int label, CharacterType charaType)
                                         pDerivedObj->y + pDerivedObj->height);
     pDerivedObj->dir = 'L'; // 初始方向
 
+    // setting the interact object
+    pObj->inter_obj[pObj->inter_len++] = Tree_L;
+
     // 根據配置文件初始化屬性
     pDerivedObj->blood = configs[charaType].blood;
     pDerivedObj->armor = configs[charaType].armor;
@@ -219,30 +222,7 @@ void Character_update(Elements *self)
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
-
-            double dx = mouse.x - chara->x;
-            double dy = mouse.y - chara->y;
-            double len = sqrt(dx * dx + dy * dy);
-
-            if (len != 0)
-            {
-                dx /= len;
-                dy /= len;
-            }
-            else
-            {
-                dx = 0.7;
-                dy = 0.7;
-            }
-
-            double offset_x = 3 * dx;
-            double offset_y = 3 * dy;
-            double weapon_x = chara->x + offset_x;
-            double weapon_y = chara->y + offset_y;
-
-            Elements *pro;
-            pro = New_Projectile(self, Projectile_L, chara->damage, weapon_x, weapon_y, 10, dx, dy);
-            _Register_elements(scene, pro);
+            Attack_Normal(self, 1, 10, false);
             chara->new_proj = true;
         }
     }
@@ -295,6 +275,24 @@ void _Character_update_position(Elements *self, int dx, int dy)
 
 void Character_interact(Elements *self, Elements *tar)
 {
-    // 實現互動邏輯
-    //test
+    Character *chara = ((Character *)(self->pDerivedObj));
+    if (tar->label == Tree_L)
+    {
+        Tree *tree = ((Tree *)(tar->pDerivedObj));
+        if (tree->hitbox->overlap(tree->hitbox, chara->hitbox))
+        {
+            if(chara->x > tree->x){
+                _Character_update_position(self, 5, 0);
+            }
+            if(chara->x < tree->x){
+                _Character_update_position(self, -5, 0);
+            }
+            if(chara->y > tree->y){
+                _Character_update_position(self, 0, 5);
+            }
+            if(chara->y < tree->y){
+                _Character_update_position(self, 0, -5);
+            }
+        }
+    }
 }
