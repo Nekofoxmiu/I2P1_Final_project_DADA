@@ -52,19 +52,19 @@ void Floor_interact(Elements *self, Elements *tar)
         {
             _Character_update_position(tar, (left_limit - chara->x), 0);
         }
-        else if (chara->x > right_limit)
+        if (chara->x > right_limit)
         {
             _Character_update_position(tar, (right_limit - chara->x), 0);
         }
-        else if (chara->y < up_limit) {
+        if (chara->y < up_limit) {
             _Character_update_position(tar, 0, (up_limit - chara->y));
         }
-        else if (chara->y > down_limit) {
+        if (chara->y > down_limit) {
             _Character_update_position(tar, 0, (down_limit - chara->y));
         }
     }
 }
-void Floor_draw(Elements *self)
+void Floor_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Floor *Obj = ((Floor *)(self->pDerivedObj));
     for (int i = 0; i < 6; i++)
@@ -73,7 +73,8 @@ void Floor_draw(Elements *self)
         {
             if (Obj->map_data[i][j])
             {
-                al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
+                //al_draw_bitmap(Obj->img, Obj->x + j * Obj->width, Obj->y + i * Obj->height, 0);
+                al_draw_bitmap(Obj->img, j * Obj->width - camera_offset_x, i * Obj->height - camera_offset_y, 0);                
             }
         }
     }

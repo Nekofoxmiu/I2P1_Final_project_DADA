@@ -50,7 +50,7 @@ typedef struct _Enemy
 Elements *New_Enemy(int label, EnemyType enemyType, Character *target);
 void _Enemy_update_position(Elements *self, int dx, int dy);
 void Enemy_update(Elements *self);
-void Enemy_draw(Elements *self);
+void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Enemy_destroy(Elements *self);
 
 void load_enemy_config(const char *filename, EnemyConfig configs[]);

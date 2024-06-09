@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 typedef struct _Elements Elements;
-typedef void (*fptrEleDraw)(Elements *);
+typedef void (*fptrEleDraw)(Elements *, float, float);
 typedef void (*fptrEleUpdate)(Elements *);
 typedef void (*fptrEleInteract)(Elements *, Elements *);
 typedef void (*fptrEleGetPosition)(Elements *, float *, float *);

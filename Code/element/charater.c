@@ -81,8 +81,8 @@ Elements *New_Character(int label, CharacterType charaType)
     // 初始化角色的其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
-    pDerivedObj->x = 300;
-    pDerivedObj->y = HEIGHT - pDerivedObj->height - 60;
+    pDerivedObj->x = WIDTH / 2 - pDerivedObj->width / 2;
+    pDerivedObj->y = HEIGHT / 2 - pDerivedObj->height / 2;
     pDerivedObj->weapon_dir_x = pDerivedObj->x;
     pDerivedObj->weapon_dir_y = pDerivedObj->y;
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x,
@@ -228,14 +228,15 @@ void Character_update(Elements *self)
     }
 }
 
-void Character_draw(Elements *self)
+void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     // 根據狀態繪製對應的圖像
     Character *chara = ((Character *)(self->pDerivedObj));
     ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (frame)
     {
-        al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        //al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(frame, chara->x - camera_offset_x, chara->y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)
     {
@@ -273,6 +274,7 @@ void _Character_update_position(Elements *self, int dx, int dy)
     hitbox->update_center_y(hitbox, dy);
 }
 
+/*
 void Character_interact(Elements *self, Elements *tar)
 {
     Character *chara = ((Character *)(self->pDerivedObj));
@@ -296,3 +298,6 @@ void Character_interact(Elements *self, Elements *tar)
         }
     }
 }
+*/
+
+void Character_interact(Elements *self, Elements *tar) {}

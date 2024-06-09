@@ -12,7 +12,7 @@ Scene *New_GameScene(int label)
     Scene *pObj = New_Scene(label);
     // setting derived object member
     pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
-    pDerivedObj->background = al_load_bitmap("assets/image/stage.jpg");
+    pDerivedObj->background = al_load_bitmap("assets/image/map.png");
     pObj->pDerivedObj = pDerivedObj;
     pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
     pDerivedObj->chara_blood_y = 30;
@@ -38,8 +38,8 @@ void update_camera(Character *chara){
     // prevent camera from exceeding world width/height
     if (camera_x < 0) camera_x = 0;
     if (camera_y < 0) camera_y = 0;
-    if (camera_x > WORLD_WIDTH - WIDTH) camera_x = WORLD_WIDTH - WIDTH;
-    if (camera_y > WORLD_HEIGHT - HEIGHT) camera_y = WORLD_HEIGHT - HEIGHT;
+    if (camera_x >= WORLD_WIDTH - WIDTH) camera_x = WORLD_WIDTH - WIDTH;
+    if (camera_y >= WORLD_HEIGHT - HEIGHT) camera_y = WORLD_HEIGHT - HEIGHT;
 }
 
 void game_scene_update(Scene *self)
@@ -64,7 +64,7 @@ void game_scene_update(Scene *self)
     if (spawn_wall)
     {
         spawn_wall = false; // set the flag indicating the key is pressed
-        Elements *wall = New_Wall(Wall_L, mouse.x, mouse.y);
+        Elements *wall = New_Wall(Wall_L, mouse.x + camera_x, mouse.y + camera_y);
         _Register_elements(self, wall);
     }
 
@@ -104,17 +104,22 @@ void game_scene_draw(Scene *self)
 {
     al_clear_to_color(al_map_rgb(0, 0, 0));
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
+    /*
     al_draw_scaled_bitmap(gs->background,
                           0, 0, WIDTH, HEIGHT,
                           0, 0, WORLD_WIDTH, WORLD_HEIGHT,
                           0);
+    */
+    al_draw_bitmap(gs->background, 0 - camera_x, 0 - camera_y, 0);
+    
     ElementVec allEle = _Get_all_elements(self);
+    Character *chara = allEle.arr[Character_L]->pDerivedObj;
     for (int i = 0; i < allEle.len; i++)
     {
         Elements *ele = allEle.arr[i];
-        ele->Draw(ele);
+        ele->Draw(ele, camera_x, camera_y);
     }
-    Character *chara = allEle.arr[Character_L]->pDerivedObj;
+    
     char blood[20];
     sprintf(blood, "Blood: %d", (int)chara->blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_CENTRE, blood);

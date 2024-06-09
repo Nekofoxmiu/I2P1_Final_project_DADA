@@ -27,10 +27,11 @@ Elements *New_Tree(int label)
 }
 void Tree_update(Elements *self) {}
 void Tree_interact(Elements *self, Elements *tar) {}
-void Tree_draw(Elements *self)
+void Tree_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Tree *Obj = ((Tree *)(self->pDerivedObj));
-    al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
 }
 void Tree_destory(Elements *self)
 {
