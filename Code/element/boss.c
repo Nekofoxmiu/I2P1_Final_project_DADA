@@ -151,38 +151,12 @@ void Boss_update(Elements *self)
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (boss->gif_status[ATK]->display_index == 2 && boss->new_proj == false)
         {
-            double offset_x = (boss->dir == true) ? boss->width + 5 : -50;
-            double offset_y = 10;
-            double weapon_x = boss->x + offset_x;
-            double weapon_y = boss->y + offset_y;
-
-            double dx = boss->target->x - weapon_x;
-            double dy = boss->target->y - weapon_y;
-            double len = sqrt(dx * dx + dy * dy);
-
-            if (len != 0)
-            {
-                boss->weapon_dir_x = dx / len;
-                boss->weapon_dir_y = dy / len;
-            }
-            else
-            {
-                boss->weapon_dir_x = 1;
-                boss->weapon_dir_y = 1;
-            }
-
-            Elements *pro;
-            pro = New_Projectile(self, Projectile_L,
-                                boss->damage,
-                                weapon_x,
-                                weapon_y,
-                                10, boss->weapon_dir_x, boss->weapon_dir_y);
-            _Register_elements(scene, pro);
+            Attack_Radial(self, 10, 5, 2);
+            // Attack_Normal(self, 2, 5, true);
             boss->new_proj = true;
         }
     }
 }
-
 
 void Boss_draw(Elements *self)
 {
