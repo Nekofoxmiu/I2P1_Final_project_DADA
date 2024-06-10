@@ -1,5 +1,5 @@
 OUT := game
-OUT_DIR := .
+OUT_DIR := bin
 
 CC := gcc
 
@@ -20,6 +20,7 @@ ifeq ($(OS), Windows_NT) # Windows OS
 	ALLEGRO_FLAGS_DEBUG := -I$(ALLEGRO_PATH)/include -L$(ALLEGRO_PATH)/lib/liballegro_monolith-debug.dll.a
 	ALLEGRO_DLL_PATH_DEBUG := $(ALLEGRO_PATH)/lib/liballegro_monolith-debug.dll.a
 
+	MKDIR_OUT := @if not exist ${OUT_DIR} ( mkdir ${OUT_DIR} )
 	RM_OBJ := $(foreach name, $(OBJ), del $(name) & )
 	RM_OUT += $(foreach name, $(*.gch */*.gch), del $(name) & )
 	ifeq ($(suffix $(OUT)),)
@@ -38,6 +39,7 @@ else # Mac OS / Linux
 	ALLEGRO_FLAGS_DEBUG := $(ALLEGRO_FLAGS_RELEASE)
 	ALLEGRO_DLL_PATH_DEBUG := 
 
+	MKDIR_OUT := mkdir -p $(OUT_DIR)
 	RM_OBJ := rm $(OBJ)
 	RM_OUT := rm $(OUT_DIR)/$(OUT)
 
@@ -46,14 +48,14 @@ else # Mac OS / Linux
 endif
 
 debug:
+	$(MKDIR_OUT)
 	$(CC) -c -g $(CXXFLAGS) $(SOURCE) $(ALLEGRO_FLAGS_DEBUG) -D DEBUG
-	mkdir -p $(OUT_DIR)
 	$(CC) $(CXXFLAGS) -o $(OUT_DIR)/$(OUT) $(OBJ) $(ALLEGRO_FLAGS_DEBUG) $(ALLEGRO_DLL_PATH_DEBUG)
 	$(RM_OBJ)
 
 release:
+	$(MKDIR_OUT)
 	$(CC) -c $(CXXFLAGS) $(SOURCE) $(ALLEGRO_FLAGS_RELEASE)
-	mkdir -p $(OUT_DIR)
 	$(CC) $(CXXFLAGS) -o $(OUT_DIR)/$(OUT) $(OBJ) $(ALLEGRO_FLAGS_RELEASE) $(ALLEGRO_DLL_PATH_RELEASE)
 	$(RM_OBJ)
 

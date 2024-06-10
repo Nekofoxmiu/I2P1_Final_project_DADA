@@ -51,6 +51,13 @@ void load_enemy_config(const char *filename, EnemyConfig configs[])
                 configs[enemyType].attack_distance = atof(value);
             else if (strcmp(state, "chase_speed") == 0)
                 configs[enemyType].chase_speed = atof(value);
+            else if (strcmp(state, "xp_drop_amount") == 0)
+                configs[enemyType].dropConfig.xp = atof(value);
+            else if (strcmp(state, "hp_drop_amount") == 0)
+                configs[enemyType].dropConfig.hp = atof(value);
+            else if (strcmp(state, "mp_drop_amount") == 0)
+                configs[enemyType].dropConfig.mp = atof(value);
+            
         }
     }
 
@@ -75,9 +82,9 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target)
     pDerivedObj->type = (EnemyType)enemyType;
 
     // 加載動畫
-    pDerivedObj->gif_status[0] = algif_new_gif(configs[enemyType].stop, -1);
-    pDerivedObj->gif_status[1] = algif_new_gif(configs[enemyType].move, -1);
-    pDerivedObj->gif_status[2] = algif_new_gif(configs[enemyType].attack, -1);
+    pDerivedObj->gif_status[STOP] = algif_new_gif(configs[enemyType].stop, -1);
+    pDerivedObj->gif_status[MOVE] = algif_new_gif(configs[enemyType].move, -1);
+    pDerivedObj->gif_status[ATK] = algif_new_gif(configs[enemyType].attack, -1);
 
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
@@ -98,6 +105,9 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target)
     pDerivedObj->chase_distance = configs[enemyType].chase_distance;
     pDerivedObj->attack_distance = configs[enemyType].attack_distance;
     pDerivedObj->chase_speed = configs[enemyType].chase_speed;
+    pDerivedObj->dropConfig.xp = configs[enemyType].dropConfig.xp;
+    pDerivedObj->dropConfig.hp = configs[enemyType].dropConfig.hp;
+    pDerivedObj->dropConfig.mp = configs[enemyType].dropConfig.mp;
 
     // 初始化其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
@@ -125,6 +135,8 @@ void Enemy_update(Elements *self)
 
     if (enemy->blood <= 0)
     {
+        target->xp += enemy->dropConfig.xp;
+        HandleDrop(enemy->dropConfig, scene, enemy->x, enemy->y);
         self->dele = true;
         return;
     }

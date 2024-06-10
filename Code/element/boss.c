@@ -18,19 +18,74 @@
 /*
    [Boss function]
 */
+
+void load_boss_config(const char *filename, BossConfig configs[])
+{
+    FILE *file = fopen(filename, "r");
+    if (!file)
+    {
+        fprintf(stderr, "Could not open config file: %s\n", filename);
+        exit(1);
+    }
+
+    char type[20], state[20], value[100];
+    while (fscanf(file, "%s %s %s", type, state, value) != EOF)
+    {
+        int bossType = -1;
+        if (strcmp(type, "default_boss_L") == 0)
+            bossType = default_boss_L;
+
+        if (bossType != -1)
+        {
+            if (strcmp(state, "stop") == 0)
+                strcpy(configs[bossType].stop, value);
+            else if (strcmp(state, "move") == 0)
+                strcpy(configs[bossType].move, value);
+            else if (strcmp(state, "attack") == 0)
+                strcpy(configs[bossType].attack, value);
+            else if (strcmp(state, "blood") == 0)
+                configs[bossType].blood = atof(value);
+            else if (strcmp(state, "armor") == 0)
+                configs[bossType].armor = atof(value);
+            else if (strcmp(state, "damage") == 0)
+                configs[bossType].damage = atof(value);
+            else if (strcmp(state, "attack_distance") == 0)
+                configs[bossType].attack_distance = atof(value);
+            else if (strcmp(state, "xp_drop_amount") == 0)
+                configs[bossType].DropConfig.xp = atof(value);
+            else if (strcmp(state, "hp_drop_amount") == 0)
+                configs[bossType].DropConfig.hp = atof(value);
+            else if (strcmp(state, "mp_drop_amount") == 0)
+                configs[bossType].DropConfig.mp = atof(value);
+            else if (strcmp(state, "drop_amount") == 0)
+                configs[bossType].DropConfig.drop_amount = atof(value);
+            else if (strcmp(state, "drop_rate") == 0)
+                configs[bossType].DropConfig.drop_rate = atof(value);
+        }
+    }
+
+    fclose(file);
+}
+
 Elements *New_Boss(int label, Character *target)
 {
+    static BossConfig configs[100];
+    static int configs_loaded = 0;
+
+    if (!configs_loaded)
+    {
+        load_boss_config("config/boss_config.txt", configs);
+        configs_loaded = 1;
+    }
+
     Boss *pDerivedObj = (Boss *)malloc(sizeof(Boss));
     Elements *pObj = New_Elements(label);
 
     // 加載動畫
-    char state_string[3][10] = {"stop", "move", "attack"};
-    for (int i = 0; i < 3; i++)
-    {
-        char buffer[53];
-        sprintf(buffer, "assets/image/boss_%s.gif", state_string[i]);
-        pDerivedObj->gif_status[i] = algif_new_gif(buffer, -1);
-    }
+    pDerivedObj->gif_status[STOP] = algif_load_animation(configs[default_boss_L].stop);
+    pDerivedObj->gif_status[MOVE] = algif_load_animation(configs[default_boss_L].move);
+    pDerivedObj->gif_status[ATK] = algif_load_animation(configs[default_boss_L].attack);
+
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
@@ -43,12 +98,20 @@ Elements *New_Boss(int label, Character *target)
     pDerivedObj->x = target->x + (int)(radius * cos(angle));
     pDerivedObj->y = target->y + (int)(radius * sin(angle));
 
+    // 根據敵人類型初始化敵人的屬性
+    pDerivedObj->blood = configs[default_boss_L].blood;
+    pDerivedObj->armor = configs[default_boss_L].armor;
+    pDerivedObj->damage = configs[default_boss_L].damage;
+    pDerivedObj->attack_distance = configs[default_boss_L].attack_distance;
+    pDerivedObj->DropConfig.xp = configs[default_boss_L].DropConfig.xp;
+    pDerivedObj->DropConfig.hp = configs[default_boss_L].DropConfig.hp;
+    pDerivedObj->DropConfig.mp = configs[default_boss_L].DropConfig.mp;
+    pDerivedObj->DropConfig.drop_amount = configs[default_boss_L].DropConfig.drop_amount;
+    pDerivedObj->DropConfig.drop_rate = configs[default_boss_L].DropConfig.drop_rate;
+
     // 初始化敵人的其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
-    pDerivedObj->blood = 20;
-    pDerivedObj->armor = 1;
-    pDerivedObj->damage = 2;
     pDerivedObj->dir = true;      // 初始方向
     pDerivedObj->state = STOP;    // 初始狀態
     pDerivedObj->target = target; // 設定目標角色
@@ -72,9 +135,8 @@ void Boss_update(Elements *self)
 
     if (boss->blood <= 0)
     {
+        HandleDrop(boss->DropConfig, scene, boss->x, boss->y);
         self->dele = true;
-        Elements *drop = New_Drop(Drop_L, XP_L, boss->x, boss->y);
-        _Register_elements(scene, drop);
         return;
     }
 
@@ -166,7 +228,7 @@ void Boss_draw(Elements *self, float camera_offset_x, float camera_offset_y)
     ALLEGRO_BITMAP *frame = algif_get_bitmap(boss->gif_status[boss->state], al_get_time());
     if (frame)
     {
-        //al_draw_bitmap(frame, boss->x, boss->y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        // al_draw_bitmap(frame, boss->x, boss->y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
         al_draw_bitmap(frame, boss->x - camera_offset_x, boss->y - camera_offset_y, ((boss->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (boss->state == ATK && boss->gif_status[boss->state]->display_index == 2)

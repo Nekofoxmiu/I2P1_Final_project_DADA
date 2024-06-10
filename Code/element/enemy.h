@@ -3,6 +3,7 @@
 
 #include "element.h"
 #include "charater.h"
+#include "drop.h"
 #include "../shapes/Shape.h"
 #include "../algif5/src/algif.h"
 
@@ -24,6 +25,7 @@ typedef struct _EnemyConfig
     double chase_distance;
     double attack_distance;
     double chase_speed;
+    DropConfig dropConfig;
 } EnemyConfig;
 
 typedef struct _Enemy
@@ -38,6 +40,7 @@ typedef struct _Enemy
     double chase_distance;
     double attack_distance;
     double chase_speed;
+    DropConfig dropConfig;
     Character *target;              // the character to track
     ALGIF_ANIMATION *gif_status[3]; // gif for each state: 0: stop, 1: move, 2: attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;

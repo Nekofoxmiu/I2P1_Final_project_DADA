@@ -22,12 +22,15 @@ typedef struct _Drop
     Shape *hitbox; // the hitbox of object
     DropType type;
     int life;
+    double amount;
 } Drop;
 
-Elements *New_Drop(int label, DropType type, int x, int y);
+Elements *New_Drop(int label, DropType type, int x, int y, double amount);
 void Drop_update(Elements *self);
 void Drop_interact(Elements *self, Elements *tar);
-void Drop_draw(Elements *self);
+void Drop_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Drop_destory(Elements *self);
+void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y);
+void HandleOneTypeDrop(DropConfig dropConfig, Scene *scene, double x, double y, int type);
 
 #endif

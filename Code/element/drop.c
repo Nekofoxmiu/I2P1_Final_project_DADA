@@ -3,7 +3,7 @@
 /*
    [drop function]
 */
-Elements *New_Drop(int label, DropType type, int x, int y)
+Elements *New_Drop(int label, DropType type, int x, int y, double amount)
 {
     Drop *pDerivedObj = (Drop *)malloc(sizeof(Drop));
     Elements *pObj = New_Elements(label);
@@ -32,6 +32,7 @@ Elements *New_Drop(int label, DropType type, int x, int y)
                                         min(pDerivedObj->width, pDerivedObj->height) / 2);
     pDerivedObj->type = type;
     pDerivedObj->life = 0;
+    pDerivedObj->amount = amount;
 
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Character_L;
@@ -57,15 +58,21 @@ void Drop_interact(Elements *self, Elements *tar) {
     if (Obj->hitbox->overlap(Obj->hitbox, chara->hitbox)) {
         al_play_sample_instance(Obj->pick_Sound);
         Character *chara = (Character *)tar->pDerivedObj;
-        printf("Buff!\n");
-        chara->blood++;
+        if (Obj->type == XP_L) {
+            chara->xp += Obj->amount;
+        } else if (Obj->type == HP_L) {
+            chara->blood += Obj->amount;
+        } else if (Obj->type == MP_L) {
+            chara->mp += Obj->amount;
+        }
         self->dele = true;
     }
 }
-void Drop_draw(Elements *self)
+void Drop_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Drop *Obj = ((Drop *)(self->pDerivedObj));
-    al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
 }
 void Drop_destory(Elements *self)
 {
@@ -74,4 +81,83 @@ void Drop_destory(Elements *self)
     free(Obj->hitbox);
     free(Obj);
     free(self);
+}
+
+void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y)
+{
+
+    for (int i = 0; i < dropConfig.drop_amount; i++)
+    {
+        if ((rand() % 100) < dropConfig.drop_rate * 100)
+        {
+            // 隨機化生成類型、位置
+            int drop_type = rand() % 3;
+            int drop_x = x + (rand() % 50) - 25;
+            int drop_y = y + (rand() % 50) - 25;
+
+            if (drop_x < 0 + 64)
+                drop_x = 0 + 64;
+            if (drop_y < 0 + 64)
+                drop_y = 0 + 64;
+            if (drop_x > WORLD_WIDTH - 64)
+                drop_x = WORLD_WIDTH - 64;
+            if (drop_y > WORLD_HEIGHT - 64)
+                drop_y = WORLD_HEIGHT - 64;
+
+            if (drop_type == XP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, XP_L, drop_x, drop_y, dropConfig.xp);
+                _Register_elements(scene, drop);
+            }
+            else if (drop_type == HP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, HP_L, drop_x, drop_y, dropConfig.hp);
+                _Register_elements(scene, drop);
+            }
+            else if (drop_type == MP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, MP_L, drop_x, drop_y, dropConfig.mp);
+                _Register_elements(scene, drop);
+            }
+        }
+    }
+}
+
+
+void HandleOneTypeDrop(DropConfig dropConfig, Scene *scene, double x, double y, int type)
+{
+    for (int i = 0; i < dropConfig.drop_amount; i++)
+    {
+        if ((rand() % 100) < dropConfig.drop_rate * 100)
+        {
+            // 隨機化生成類型、位置
+            int drop_x = x + (rand() % 50) - 25;
+            int drop_y = y + (rand() % 50) - 25;
+
+            if (drop_x < 0 + 64)
+                drop_x = 0 + 64;
+            if (drop_y < 0 + 64)
+                drop_y = 0 + 64;
+            if (drop_x > WORLD_WIDTH - 64)
+                drop_x = WORLD_WIDTH - 64;
+            if (drop_y > WORLD_HEIGHT - 64)
+                drop_y = WORLD_HEIGHT - 64;
+
+            if (type == XP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, XP_L, drop_x, drop_y, dropConfig.xp);
+                _Register_elements(scene, drop);
+            }
+            else if (type == HP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, HP_L, drop_x, drop_y, dropConfig.hp);
+                _Register_elements(scene, drop);
+            }
+            else if (type == MP_L)
+            {
+                Elements *drop = New_Drop(Drop_L, MP_L, drop_x, drop_y, dropConfig.mp);
+                _Register_elements(scene, drop);
+            }
+        }
+    }
 }

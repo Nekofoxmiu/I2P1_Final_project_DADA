@@ -34,6 +34,8 @@ typedef struct _CharacterConfig
     double armor;
     double damage;
     double speed;
+    double mp;
+    double xp;
 } CharacterConfig;
 
 typedef struct _Character
@@ -49,6 +51,8 @@ typedef struct _Character
     int anime_time; // indicate how long the animation
     bool new_proj;
     Shape *hitbox; // the hitbox of object
+    double xp;
+    double mp;
     double blood;
     double armor;
     double damage;

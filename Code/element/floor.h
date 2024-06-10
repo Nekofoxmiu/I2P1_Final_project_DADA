@@ -16,6 +16,7 @@ typedef struct _Floor
 
 Elements *New_Floor(int label);
 void _Floor_load_map(Floor *floor);
+void _Floor_build_map(Floor *Obj, float camera_offset_x, float camera_offset_y);
 void Floor_update(Elements *self);
 void Floor_interact(Elements *self, Elements *tar);
 void Floor_draw(Elements *self, float camera_offset_x, float camera_offset_y);

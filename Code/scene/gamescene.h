@@ -40,6 +40,8 @@ typedef struct _GameScene
     ALLEGRO_FONT *font;
     ALLEGRO_BITMAP *background;
     int chara_blood_x, chara_blood_y;
+    int chara_mp_x, chara_mp_y;
+    int chara_exp_x, chara_exp_y;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);
