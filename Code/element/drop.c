@@ -88,7 +88,7 @@ void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y)
 
     for (int i = 0; i < dropConfig.drop_amount; i++)
     {
-        if ((rand() % 100) < dropConfig.drop_rate * 100)
+        if ((rand() % 100) < dropConfig.drop_rate)
         {
             // 隨機化生成類型、位置
             int drop_type = rand() % 3;
@@ -128,7 +128,7 @@ void HandleOneTypeDrop(DropConfig dropConfig, Scene *scene, double x, double y, 
 {
     for (int i = 0; i < dropConfig.drop_amount; i++)
     {
-        if ((rand() % 100) < dropConfig.drop_rate * 100)
+        if ((rand() % 100) < dropConfig.drop_rate)
         {
             // 隨機化生成類型、位置
             int drop_x = x + (rand() % 50) - 25;

@@ -57,15 +57,18 @@ void load_enemy_config(const char *filename, EnemyConfig configs[])
                 configs[enemyType].dropConfig.hp = atof(value);
             else if (strcmp(state, "mp_drop_amount") == 0)
                 configs[enemyType].dropConfig.mp = atof(value);
-            
+            else if (strcmp(state, "drop_amount") == 0)
+                configs[enemyType].dropConfig.drop_amount = atof(value);
+            else if (strcmp(state, "drop_rate") == 0)
+                configs[enemyType].dropConfig.drop_rate = atof(value);
         }
     }
 
     fclose(file);
 }
 
-Elements *New_Enemy(int label, EnemyType enemyType, Character *target, 
-    double atk_enhance, double def_enhance, double hp_enhance, double chasedis_enhance, double atkdis_enhance, double spd_enhance)
+Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
+                    double atk_enhance, double def_enhance, double hp_enhance, double chasedis_enhance, double atkdis_enhance, double spd_enhance)
 {
     static EnemyConfig configs[100];
     static int configs_loaded = 0;
@@ -109,6 +112,8 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
     pDerivedObj->dropConfig.xp = configs[enemyType].dropConfig.xp;
     pDerivedObj->dropConfig.hp = configs[enemyType].dropConfig.hp;
     pDerivedObj->dropConfig.mp = configs[enemyType].dropConfig.mp;
+    pDerivedObj->dropConfig.drop_amount = configs[enemyType].dropConfig.drop_amount;
+    pDerivedObj->dropConfig.drop_rate = configs[enemyType].dropConfig.drop_rate;
 
     // 初始化其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
@@ -181,7 +186,7 @@ void Enemy_update(Elements *self)
             enemy->state = ATK;
             if (enemy->gif_status[enemy->state]->done)
             {
-                if(target->armor > enemy->damage)
+                if (target->armor > enemy->damage)
                     target->blood -= 1;
                 else
                     target->blood -= enemy->damage - target->armor;
@@ -200,7 +205,7 @@ void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y)
     ALLEGRO_BITMAP *frame = algif_get_bitmap(enemy->gif_status[enemy->state], al_get_time());
     if (frame)
     {
-        //al_draw_bitmap(frame, enemy->x, enemy->y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        // al_draw_bitmap(frame, enemy->x, enemy->y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
         al_draw_bitmap(frame, enemy->x - camera_offset_x, enemy->y - camera_offset_y, ((enemy->dir) ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (enemy->state == ATK && enemy->gif_status[enemy->state]->display_index == 2)
