@@ -38,6 +38,10 @@ void load_character_config(const char *filename, CharacterConfig config[])
                 strcpy(config[charaType].attack, value);
             else if (strcmp(state, "skill") == 0)
                 strcpy(config[charaType].attack, value);
+            else if (strcmp(state, "weapon_stop") == 0)
+                strcpy(config[charaType].weapon_stop, value);
+            else if (strcmp(state, "weapon_attack") == 0)
+                strcpy(config[charaType].weapon_attack, value);
             else if (strcmp(state, "blood") == 0)
                 config[charaType].blood = atof(value);
             else if (strcmp(state, "armor") == 0)
@@ -79,6 +83,10 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->gif_status[ATK] = algif_new_gif(configs[charaType].attack, -1);
     pDerivedObj->gif_status[SKILL] = algif_new_gif(configs[charaType].attack, -1);
 
+    // load weapon
+    pDerivedObj->weapon = al_load_bitmap(configs[charaType].weapon_stop);
+    pDerivedObj->weapon_attack = algif_new_gif(configs[charaType].weapon_attack, -1);
+
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
@@ -90,8 +98,8 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
     pDerivedObj->x = WIDTH / 2 - pDerivedObj->width / 2;
     pDerivedObj->y = HEIGHT / 2 - pDerivedObj->height / 2;
-    pDerivedObj->weapon_dir_x = pDerivedObj->x;
-    pDerivedObj->weapon_dir_y = pDerivedObj->y;
+    pDerivedObj->weapon_x = pDerivedObj->x;
+    pDerivedObj->weapon_y = pDerivedObj->y;
     pDerivedObj->level = 0;
     pDerivedObj->levelExpNeed = 100;
     pDerivedObj->ene_level = 1.1;
@@ -322,19 +330,33 @@ void Character_update(Elements *self)
 
 void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
-    // 根據狀態繪製對應的圖像
     Character *chara = ((Character *)(self->pDerivedObj));
-    ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
-    if (frame)
+
+    ALLEGRO_BITMAP *char_frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
+    if (char_frame)
     {
-        // al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
-        al_draw_bitmap(frame, chara->x - camera_offset_x, chara->y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        al_draw_bitmap(char_frame, chara->x - camera_offset_x, chara->y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
-    if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)
+
+    if (chara->state == ATK)
     {
-        al_play_sample_instance(chara->atk_Sound);
+        ALLEGRO_BITMAP *weapon_frame = algif_get_bitmap(chara->weapon_attack, al_get_time());
+        if (weapon_frame)
+        {
+            al_draw_bitmap(weapon_frame, chara->weapon_x - camera_offset_x, chara->weapon_y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        }
+
+        if (chara->gif_status[ATK]->display_index == 3)
+        {
+            al_play_sample_instance(chara->atk_Sound);
+        }
+    }
+    else
+    {
+        al_draw_bitmap(chara->weapon, chara->weapon_x - camera_offset_x, chara->weapon_y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
 }
+
 
 void Character_destory(Elements *self)
 {
@@ -364,6 +386,13 @@ void _Character_update_position(Elements *self, int dx, int dy)
     Shape *hitbox = chara->hitbox;
     hitbox->update_center_x(hitbox, dx);
     hitbox->update_center_y(hitbox, dy);
+    if (chara->dir == 'L') {
+        chara->weapon_x = chara->x - 10;
+    }
+    else {
+        chara->weapon_x = chara->x + 40;
+    }
+    chara->weapon_y = chara->y + 10;
 }
 
 /*

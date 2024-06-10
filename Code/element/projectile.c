@@ -234,8 +234,8 @@ void Attack_Normal(Elements *creator, int num_bullets, int speed, bool chase)
     else if (creator->label == Character_L)
     {
         Character *chara = creator->pDerivedObj;
-        startx = chara->x;
-        starty = chara->y;
+        startx = chara->weapon_x;
+        starty = chara->weapon_y;
         dx = mouse.x + camera_x - startx;
         dy = mouse.y + camera_y - starty;
         damage = chara->damage;
