@@ -48,9 +48,11 @@ typedef struct _Enemy
     int anime_time; // indicate how long the animation
     Shape *hitbox;
     EnemyType type; // 新增的成員，用來存儲敵人的類型
+    bool nextattack;
 } Enemy;
 
-Elements *New_Enemy(int label, EnemyType enemyType, Character *target);
+Elements *New_Enemy(int label, EnemyType enemyType, Character *target, 
+    double atk_enhance, double def_enhance, double hp_enhance, double chasedis_enhance, double atkdis_enhance, double spd_enhance);
 void _Enemy_update_position(Elements *self, int dx, int dy);
 void Enemy_update(Elements *self);
 void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y);

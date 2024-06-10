@@ -29,9 +29,9 @@ void _Floor_load_map(Floor *floor)
 {
     FILE *data;
     data = fopen("assets/map/gamescene_map.txt", "r");
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 64; i++)
     {
-        for (int j = 0; j < 32; j++)
+        for (int j = 0; j < 64; j++)
         {
             fscanf(data, "%d", &floor->map_data[i][j]);
         }
@@ -70,9 +70,9 @@ void Floor_interact(Elements *self, Elements *tar)
 void Floor_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Floor *Obj = ((Floor *)(self->pDerivedObj));
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 64; i++)
     {
-        for (int j = 0; j < 32; j++)
+        for (int j = 0; j < 64; j++)
         {
             if (Obj->map_data[i][j] == 1)
             {
@@ -85,9 +85,9 @@ void Floor_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 
 void _Floor_build_map(Floor *Obj, float camera_offset_x, float camera_offset_y)
 {
-    for (int i = 0; i < 32; i++)
+    for (int i = 0; i < 64; i++)
     {
-        for (int j = 0; j < 32; j++)
+        for (int j = 0; j < 64; j++)
         {
             if (Obj->map_data[i][j] == 1)
             {

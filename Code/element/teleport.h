@@ -16,7 +16,7 @@ typedef struct _Teleport
 Elements *New_Teleport(int label);
 void Teleport_update(Elements *self);
 void Teleport_interact(Elements *self, Elements *tar);
-void Teleport_draw(Elements *self);
+void Teleport_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Teleport_destory(Elements *self);
 
 #endif

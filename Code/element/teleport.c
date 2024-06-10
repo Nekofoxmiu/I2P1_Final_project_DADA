@@ -50,7 +50,7 @@ void Teleport_interact(Elements *self, Elements *tar)
         }
     }
 }
-void Teleport_draw(Elements *self)
+void Teleport_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Teleport *Obj = ((Teleport *)(self->pDerivedObj));
     al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);

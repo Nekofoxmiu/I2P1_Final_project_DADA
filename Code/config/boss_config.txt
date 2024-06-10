@@ -9,5 +9,5 @@ default_boss_L xp_drop_amount 20
 default_boss_L hp_drop_amount 20
 default_boss_L mp_drop_amount 5
 default_boss_L drop_amount 3
-default_boss_L drop_rate 1
+default_boss_L drop_rate 100
 
