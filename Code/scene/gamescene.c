@@ -32,7 +32,7 @@ Scene *New_GameScene(int label)
     // spawn rate
     pDerivedObj->ene_spawn_rate = 0.5;
     pDerivedObj->ene_spawn_acc = 0;
-    pDerivedObj->boss_spawn_rate = 0.05;
+    pDerivedObj->boss_spawn_rate = 0.01;
     pDerivedObj->boss_spawn_acc = 0;
     // spawn type proportion
     pDerivedObj->slime_proportion = 1;
@@ -76,6 +76,7 @@ void game_scene_update(Scene *self)
 {
     // update timer
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
+    Character* chara = (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj);
     if (!everything_stop)
     {
         double current_time = al_get_time();
@@ -83,32 +84,32 @@ void game_scene_update(Scene *self)
         gs->elapsed_time_spawn = current_time - gs->start_time_spawn;
         gs->elapsed_time_boss = current_time - gs->start_time_boss;
 
-        // enhance every 10 seconds
-        if(gs->elapsed_time > 10){
-            gs->ene_atk_enhance *= 1.1;
-            gs->ene_def_enhance *= 1.1;
-            gs->ene_hp_enhance *= 1.1;
-            gs->ene_chasedis_enhance *= 1.1;
-            gs->ene_atkdis_enhance *= 1;
-            gs->ene_spd_enhance *= 1.1;
+    // enhance every half minute
+    if(gs->elapsed_time > 30){
+        gs->ene_atk_enhance *= 1.1;
+        gs->ene_def_enhance *= 1.1;
+        gs->ene_hp_enhance *= 1.1;
+        gs->ene_chasedis_enhance *= 1.1;
+        gs->ene_atkdis_enhance *= 1;
+        gs->ene_spd_enhance *= 1.1;
 
             // enhance spawn rate
             gs->ene_spawn_rate *= 1.1;
             gs->boss_spawn_rate *= 1.05;
 
-            // redistribute spawn type proportion
-            if(gs->slime_proportion > 0.5){
-                gs->slime_proportion *= 0.98;
-                gs->dog_proportion = (1 - gs->slime_proportion) * 0.95;
-            }
-            else if(gs->dog_proportion > 0.3){
-                gs->slime_proportion *= 0.99;
-                gs->dog_proportion *= 0.95;
-            }
-            else{
-                gs->slime_proportion *= 0.99;
-                gs->dog_proportion *= 0.99;
-            }
+        // redistribute spawn type proportion
+        if(gs->slime_proportion > 0.6){
+            gs->slime_proportion *= 0.95;
+            gs->dog_proportion = 1 - gs->slime_proportion;
+        }
+        else if(gs->dog_proportion > 0.3){
+            gs->slime_proportion *= 0.98;
+            gs->dog_proportion *= 0.95;
+        }
+        else{
+            gs->slime_proportion *= 0.98;
+            gs->dog_proportion *= 0.98;
+        }
 
             // reset the start time
             gs->start_time = current_time;
@@ -143,17 +144,17 @@ void game_scene_update(Scene *self)
         spawn_enemy = false; // set the flag indicating the key is pressed
         double x = (double) rand() / (RAND_MAX + 1.0);
         if(x <= gs->slime_proportion){
-            Elements *enemy = New_Enemy(Enemy_L, slime_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+            Elements *enemy = New_Enemy(Enemy_L, slime_L, chara, 
                 gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
             _Register_elements(self, enemy);
         }
         else if(x <= gs->slime_proportion + gs->dog_proportion){
-            Elements *enemy = New_Enemy(Enemy_L, dog_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+            Elements *enemy = New_Enemy(Enemy_L, dog_L, chara, 
                 gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
             _Register_elements(self, enemy);
         }
         else{
-            Elements *enemy = New_Enemy(Enemy_L, dragon_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+            Elements *enemy = New_Enemy(Enemy_L, dragon_L, chara, 
                 gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
             _Register_elements(self, enemy);
         }
@@ -162,7 +163,7 @@ void game_scene_update(Scene *self)
     if (spawn_boss)
     {
         spawn_boss = false; // set the flag indicating the key is pressed
-        Elements *boss = New_Boss(Boss_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+        Elements *boss = New_Boss(Boss_L, chara);
         _Register_elements(self, boss);
     }
 
@@ -195,14 +196,24 @@ void game_scene_update(Scene *self)
     }
 
     // update camera
-    update_camera((Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+    update_camera(chara);
 
     // remove element
-    for (int i = 0; i < allEle.len; i++)
+    for(int i = 0; i < allEle.len; i++)
     {
         Elements *ele = allEle.arr[i];
         if (ele->dele)
             _Remove_elements(self, ele);
+    }
+
+    // character death
+    if(chara -> blood <= 0){
+        score = chara->xp;
+        if(score > highest_record){
+            highest_record = score;
+        }
+        self->scene_end = true;
+        window = 2;
     }
 }
 void game_scene_draw(Scene *self)

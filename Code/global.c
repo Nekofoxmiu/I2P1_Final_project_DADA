@@ -25,3 +25,5 @@ bool spawn_wall = false;
 bool everything_stop = false;
 bool game_over = false;
 bool level_up = false;
+double highest_record = 0;
+double score = 0;

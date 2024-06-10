@@ -3,7 +3,7 @@ default_chara_L move assets/image/chara_move.gif
 default_chara_L attack assets/image/chara_attack.gif
 default_chara_L blood 100
 default_chara_L armor 1
-default_chara_L damage 100
+default_chara_L damage 25
 default_chara_L speed 5
 default_chara_L mp 20
 default_chara_L xp 0

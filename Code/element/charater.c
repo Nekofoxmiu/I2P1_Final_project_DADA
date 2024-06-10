@@ -36,6 +36,8 @@ void load_character_config(const char *filename, CharacterConfig config[])
                 strcpy(config[charaType].move, value);
             else if (strcmp(state, "attack") == 0)
                 strcpy(config[charaType].attack, value);
+            else if (strcmp(state, "skill") == 0)
+                strcpy(config[charaType].attack, value);
             else if (strcmp(state, "blood") == 0)
                 config[charaType].blood = atof(value);
             else if (strcmp(state, "armor") == 0)
@@ -75,6 +77,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->gif_status[STOP] = algif_new_gif(configs[charaType].stop, -1);
     pDerivedObj->gif_status[MOVE] = algif_new_gif(configs[charaType].move, -1);
     pDerivedObj->gif_status[ATK] = algif_new_gif(configs[charaType].attack, -1);
+    pDerivedObj->gif_status[SKILL] = algif_new_gif(configs[charaType].attack, -1);
 
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
@@ -97,9 +100,10 @@ Elements *New_Character(int label, CharacterType charaType)
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
     pDerivedObj->dir = 'L'; // 初始方向
+    pDerivedObj->aura = false;
 
     // setting the interact object
-    pObj->inter_obj[pObj->inter_len++] = Tree_L;
+    //pObj->inter_obj[pObj->inter_len++] = Tree_L;
 
     // 根據配置文件初始化屬性
     pDerivedObj->max_blood = configs[charaType].blood;
@@ -170,12 +174,18 @@ void Character_update(Elements *self)
         {
             chara->state = MOVE;
         }
+        else if(mouse_state[3]){
+            chara->state = SKILL;
+        }
     }
     else if (chara->state == MOVE)
     {
         if (mouse_state[1])
         {
             chara->state = ATK;
+        }
+        else if(mouse_state[3]){
+            chara->state = SKILL;
         }
         else
         {
@@ -253,7 +263,7 @@ void Character_update(Elements *self)
 
             _Character_update_position(self, dx, dy);
         }
-
+        
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
@@ -261,7 +271,53 @@ void Character_update(Elements *self)
             chara->new_proj = true;
         }
     }
+    else if (chara->state == SKILL)
+    {
+        if (chara->gif_status[chara->state]->done)
+        {
+            chara->state = STOP;
+            chara->new_proj = false;
+        }
+        else
+        {
+            int dx = 0, dy = 0;
+            if (key_state[ALLEGRO_KEY_A])
+            {
+                chara->dir = 'L';
+                dx -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_D])
+            {
+                chara->dir = 'R';
+                dx += 1;
+            }
+            if (key_state[ALLEGRO_KEY_W])
+            {
+                dy -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_S])
+            {
+                dy += 1;
+            }
+
+            // 計算單位移動向量並乘以固定速度
+            float length = sqrt(dx * dx + dy * dy);
+            if (length != 0)
+            {
+                dx = (int)(dx / length * speed);
+                dy = (int)(dy / length * speed);
+            }
+
+            _Character_update_position(self, dx, dy);
+        }       
+    }
     prepause_state = chara->state;
+
+    if (chara->mp >= 20 && chara->aura == false)
+    {
+        chara->mp -= 20;
+        chara->aura = true;        
+    }
 }
 
 void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
