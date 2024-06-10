@@ -136,7 +136,7 @@ void Enemy_update(Elements *self)
     if (enemy->blood <= 0)
     {
         target->xp += enemy->dropConfig.xp;
-        HandleDrop(enemy->dropConfig, scene, enemy->x, enemy->y);
+        HandleDrop(enemy->dropConfig, target, scene, enemy->x, enemy->y);
         self->dele = true;
         return;
     }

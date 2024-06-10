@@ -135,7 +135,7 @@ void Boss_update(Elements *self)
 
     if (boss->blood <= 0)
     {
-        HandleDrop(boss->DropConfig, scene, boss->x, boss->y);
+        HandleDrop(boss->DropConfig, target, scene, boss->x, boss->y);
         self->dele = true;
         return;
     }
