@@ -56,6 +56,9 @@ void Drop_interact(Elements *self, Elements *tar) {
     Character *chara = ((Character *)(tar->pDerivedObj));
     if (Obj->hitbox->overlap(Obj->hitbox, chara->hitbox)) {
         al_play_sample_instance(Obj->pick_Sound);
+        Character *chara = (Character *)tar->pDerivedObj;
+        printf("Buff!\n");
+        chara->blood++;
         self->dele = true;
     }
 }
