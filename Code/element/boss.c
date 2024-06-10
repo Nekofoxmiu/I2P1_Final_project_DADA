@@ -73,6 +73,8 @@ void Boss_update(Elements *self)
     if (boss->blood <= 0)
     {
         self->dele = true;
+        Elements *drop = New_Drop(Drop_L, XP_L, boss->x, boss->y);
+        _Register_elements(scene, drop);
         return;
     }
 
@@ -187,6 +189,7 @@ void Boss_destroy(Elements *self)
     Boss *boss = (Boss *)(self->pDerivedObj);
     for (int i = 0; i < 3; i++)
         algif_destroy_animation(boss->gif_status[i]);
+
     free(boss->hitbox);
     free(boss);
     free(self);

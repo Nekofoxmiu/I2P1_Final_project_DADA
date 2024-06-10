@@ -32,7 +32,8 @@ typedef enum EleType
     Enemy_L,
     Boss_L,
     Projectile_L,
-    Wall_L
+    Wall_L,
+    Drop_L
 } EleType;
 typedef struct _GameScene
 {

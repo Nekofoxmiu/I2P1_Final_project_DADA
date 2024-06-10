@@ -3,6 +3,7 @@
 
 #include "element.h"
 #include "charater.h"
+#include "drop.h"
 #include "../shapes/Shape.h"
 #include "../algif5/src/algif.h"
 
