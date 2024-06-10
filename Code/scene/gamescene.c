@@ -86,12 +86,12 @@ void game_scene_update(Scene *self)
 
     // enhance every half minute
     if(gs->elapsed_time > 30){
-        gs->ene_atk_enhance *= 1.05;
-        gs->ene_def_enhance *= 1.05;
-        gs->ene_hp_enhance *= 1.05;
-        gs->ene_chasedis_enhance *= 1.05;
+        gs->ene_atk_enhance *= 1.1;
+        gs->ene_def_enhance *= 1.1;
+        gs->ene_hp_enhance *= 1.1;
+        gs->ene_chasedis_enhance *= 1.1;
         gs->ene_atkdis_enhance *= 1;
-        gs->ene_spd_enhance *= 1.05;
+        gs->ene_spd_enhance *= 1.1;
 
             // enhance spawn rate
             gs->ene_spawn_rate *= 1.1;
@@ -199,18 +199,22 @@ void game_scene_update(Scene *self)
     update_camera(chara);
 
     // remove element
-    for (int i = 0; i < allEle.len; i++)
+    for(int i = 0; i < allEle.len; i++)
     {
         Elements *ele = allEle.arr[i];
         if (ele->dele)
             _Remove_elements(self, ele);
     }
-    /*
+
     // character death
     if(chara -> blood <= 0){
-        game_scene_destroy(self);
+        score = chara->xp;
+        if(score > highest_record){
+            highest_record = score;
+        }
+        self->scene_end = true;
+        window = 2;
     }
-    */
 }
 void game_scene_draw(Scene *self)
 {
