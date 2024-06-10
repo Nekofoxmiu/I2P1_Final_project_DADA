@@ -2,7 +2,7 @@
 #include "gamescene.h"
 #include "../global.h"
 
-#define FONT_SIZE 24
+#define FONT_SIZE 48
 /*
    [GameScene function]
 */
@@ -11,8 +11,8 @@ Scene *New_GameScene(int label)
     GameScene *pDerivedObj = (GameScene *)malloc(sizeof(GameScene));
     Scene *pObj = New_Scene(label);
     // setting derived object member
-    pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
-    pDerivedObj->background = al_load_bitmap("assets/image/merged_map.png");
+    pDerivedObj->font = al_load_ttf_font("assets/font/pixel_font.ttf", FONT_SIZE, 0);
+    pDerivedObj->background = al_load_bitmap("assets/image/background.png");
     pObj->pDerivedObj = pDerivedObj;
     pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
     pDerivedObj->chara_blood_y = 30;
@@ -184,8 +184,6 @@ void game_scene_draw(Scene *self)
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
-
-
 }
 void game_scene_destroy(Scene *self)
 {
