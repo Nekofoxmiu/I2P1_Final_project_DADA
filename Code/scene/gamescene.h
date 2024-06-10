@@ -39,6 +39,14 @@ typedef struct _GameScene
     ALLEGRO_FONT *font;
     ALLEGRO_BITMAP *background;
     int chara_blood_x, chara_blood_y;
+    double ene_hp_enhance;
+    double ene_def_enhance;
+    double ene_atk_enhance;
+    double ene_chasedis_enhance;
+    double ene_atkdis_enhance;
+    double ene_spd_enhance;
+    double start_time;
+    double elapsed_time;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);

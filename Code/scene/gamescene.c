@@ -16,13 +16,24 @@ Scene *New_GameScene(int label)
     pObj->pDerivedObj = pDerivedObj;
     pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
     pDerivedObj->chara_blood_y = 30;
+    // enemy status enhance (initial = 1)
+    pDerivedObj->ene_hp_enhance = 1;
+    pDerivedObj->ene_def_enhance = 1;
+    pDerivedObj->ene_atk_enhance = 1;
+    pDerivedObj->ene_chasedis_enhance = 1;
+    pDerivedObj->ene_atkdis_enhance = 1;
+    pDerivedObj->ene_spd_enhance = 1;
+    // set timer
+    pDerivedObj->start_time = al_get_time();
+    pDerivedObj->elapsed_time = 0;
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
-    //_Register_elements(pObj, New_Teleport(Teleport_L));
+    // _Register_elements(pObj, New_Teleport(Teleport_L));
     _Register_elements(pObj, New_Tree(Tree_L));
     Elements *character = New_Character(Character_L, default_chara_L);
     _Register_elements(pObj, character);
-    _Register_elements(pObj, New_Enemy(Enemy_L, slime_L, (Character *)(character->pDerivedObj)));
+    _Register_elements(pObj, New_Enemy(Enemy_L, slime_L, (Character *)(character->pDerivedObj), 
+        pDerivedObj->ene_atk_enhance, pDerivedObj->ene_def_enhance, pDerivedObj->ene_hp_enhance, pDerivedObj->ene_chasedis_enhance, pDerivedObj->ene_atkdis_enhance, pDerivedObj->ene_spd_enhance));
 
     // setting derived object function
     pObj->Update = game_scene_update;
@@ -44,13 +55,26 @@ void update_camera(Character *chara){
 
 void game_scene_update(Scene *self)
 {
+    // update timer
+    GameScene *gs = ((GameScene *)(self->pDerivedObj));
+    double current_time = al_get_time();
+    gs->elapsed_time = current_time - gs->start_time;
+    // enhance every 10 sec
+    gs->ene_atk_enhance *= 1.1 * gs->elapsed_time / 6;
+    gs->ene_def_enhance *= 1.1 * gs->elapsed_time / 6;
+    gs->ene_hp_enhance *= 1.1 * gs->elapsed_time / 6;
+    gs->ene_chasedis_enhance *= 1.1 * gs->elapsed_time / 6;
+    gs->ene_atkdis_enhance *= 1.01 * gs->elapsed_time / 6;
+    gs->ene_spd_enhance *= 1.1 * gs->elapsed_time / 6;
+
     // update every element
     ElementVec allEle = _Get_all_elements(self);
 
     if (spawn_enemy)
     {
         spawn_enemy = false; // set the flag indicating the key is pressed
-        Elements *enemy = New_Enemy(Enemy_L, slime_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj));
+        Elements *enemy = New_Enemy(Enemy_L, slime_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+            gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
         _Register_elements(self, enemy);
     }
 
