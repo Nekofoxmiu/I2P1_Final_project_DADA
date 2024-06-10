@@ -82,9 +82,9 @@ Elements *New_Boss(int label, Character *target)
     Elements *pObj = New_Elements(label);
 
     // 加載動畫
-    pDerivedObj->gif_status[STOP] = algif_load_animation(configs[default_boss_L].stop);
-    pDerivedObj->gif_status[MOVE] = algif_load_animation(configs[default_boss_L].move);
-    pDerivedObj->gif_status[ATK] = algif_load_animation(configs[default_boss_L].attack);
+    pDerivedObj->gif_status[STOP] = algif_new_gif(configs[default_boss_L].stop, -1);
+    pDerivedObj->gif_status[MOVE] = algif_new_gif(configs[default_boss_L].move, -1);
+    pDerivedObj->gif_status[ATK] = algif_new_gif(configs[default_boss_L].attack, -1);
 
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
