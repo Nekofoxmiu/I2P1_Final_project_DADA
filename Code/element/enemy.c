@@ -138,6 +138,7 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
+    pDerivedObj->nextattack = true;
 
     pObj->pDerivedObj = pDerivedObj;
     pObj->Draw = Enemy_draw;
@@ -196,12 +197,15 @@ void Enemy_update(Elements *self)
         else
         {
             enemy->state = ATK;
-            if (enemy->gif_status[enemy->state]->done)
-            {
+            if(enemy->nextattack == true){
                 if (target->armor > enemy->damage)
                     target->blood -= 1;
                 else
                     target->blood -= enemy->damage - target->armor;
+                enemy->nextattack = false;
+            }
+            if (enemy->gif_status[enemy->state]->done){
+                enemy->nextattack = true;
             }
         }
     }
