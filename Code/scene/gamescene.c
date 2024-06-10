@@ -14,12 +14,12 @@ Scene *New_GameScene(int label)
     pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
     pDerivedObj->background = al_load_bitmap("assets/image/map.png");
     pObj->pDerivedObj = pDerivedObj;
-    pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_blood_y = 30;
-    pDerivedObj->chara_mp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_mp_y = 60;
-    pDerivedObj->chara_exp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_exp_y = 90;
+    pDerivedObj->chara_blood_x = 20;
+    pDerivedObj->chara_blood_y = 20;
+    pDerivedObj->chara_mp_x = 20;
+    pDerivedObj->chara_mp_y = 35;
+    pDerivedObj->chara_exp_x = 20;
+    pDerivedObj->chara_exp_y = 50;
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
     //_Register_elements(pObj, New_Teleport(Teleport_L));
@@ -130,9 +130,9 @@ void game_scene_draw(Scene *self)
     sprintf(blood, "Blood: %d", (int)chara->blood);
     sprintf(mp, "MP: %d", (int)chara->mp);
     sprintf(exp, "EXP: %d", (int)chara->xp);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_CENTRE, blood);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_CENTRE, mp);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_CENTRE, exp);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
 
 
 }
