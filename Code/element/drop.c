@@ -50,6 +50,7 @@ Elements *New_Drop(int label, DropType type, Character *target, int x, int y, do
     return pObj;
 }
 void Drop_update(Elements *self) {
+    if(everything_stop) return;
     Drop *Obj = ((Drop *)(self->pDerivedObj));
     Character *target = Obj->target;
 

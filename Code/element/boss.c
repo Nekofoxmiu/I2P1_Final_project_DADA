@@ -130,7 +130,20 @@ Elements *New_Boss(int label, Character *target)
 
 void Boss_update(Elements *self)
 {
+    static int prepause_state = -1;
     Boss *boss = (Boss *)(self->pDerivedObj);
+    if (everything_stop)
+    {
+        boss->state = STOP;
+        return;
+    }
+    else
+    {
+        if (prepause_state != -1)
+        {
+            boss->state = prepause_state;
+        }
+    }
     Character *target = boss->target;
 
     if (boss->blood <= 0)
@@ -220,6 +233,7 @@ void Boss_update(Elements *self)
             boss->new_proj = true;
         }
     }
+    prepause_state = boss->state;
 }
 
 void Boss_draw(Elements *self, float camera_offset_x, float camera_offset_y)
