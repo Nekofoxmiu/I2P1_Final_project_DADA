@@ -31,7 +31,7 @@ void Levelup_update(Elements *self);
 void Levelup_interact(Elements *self, Elements *tar);
 void Levelup_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Levelup_destory(Elements *self);
-void Levelup_handle_mouse_click(Levelup *Obj, int mouse_x, int mouse_y);
+void Levelup_handle_mouse_click(Levelup *Obj, Elements *self, int mouse_x, int mouse_y);
 void Levelup_handle_mouse_hover(Levelup *Obj, int mouse_x, int mouse_y);
 
 #endif

@@ -17,19 +17,40 @@ ALLEGRO_BITMAP *icons[7];
 void load_icons()
 {
     icons[0] = al_load_bitmap("assets/image/upgrade/icon/blood.png");
-    if (!icons[0]) { printf("Failed to load blood.png\n"); }
+    if (!icons[0])
+    {
+        printf("Failed to load blood.png\n");
+    }
     icons[1] = al_load_bitmap("assets/image/upgrade/icon/damage.png");
-    if (!icons[1]) { printf("Failed to load damage.png\n"); }
+    if (!icons[1])
+    {
+        printf("Failed to load damage.png\n");
+    }
     icons[2] = al_load_bitmap("assets/image/upgrade/icon/armor.png");
-    if (!icons[2]) { printf("Failed to load armor.png\n"); }
+    if (!icons[2])
+    {
+        printf("Failed to load armor.png\n");
+    }
     icons[3] = al_load_bitmap("assets/image/upgrade/icon/speed.png");
-    if (!icons[3]) { printf("Failed to load speed.png\n"); }
+    if (!icons[3])
+    {
+        printf("Failed to load speed.png\n");
+    }
     icons[4] = al_load_bitmap("assets/image/upgrade/icon/mp.png");
-    if (!icons[4]) { printf("Failed to load mp.png\n"); }
+    if (!icons[4])
+    {
+        printf("Failed to load mp.png\n");
+    }
     icons[5] = al_load_bitmap("assets/image/upgrade/icon/bullet.png");
-    if (!icons[5]) { printf("Failed to load bullet.png\n"); }
+    if (!icons[5])
+    {
+        printf("Failed to load bullet.png\n");
+    }
     icons[6] = al_load_bitmap("assets/image/upgrade/icon/poison.png");
-    if (!icons[6]) { printf("Failed to load poison.png\n"); }
+    if (!icons[6])
+    {
+        printf("Failed to load poison.png\n");
+    }
 }
 
 Elements *New_Levelup(int label, Character *player)
@@ -49,7 +70,7 @@ Elements *New_Levelup(int label, Character *player)
     pDerivedObj->x = 0;
     pDerivedObj->y = 0;
     pDerivedObj->player = player;
-    pDerivedObj->mouse_button_pressed = false;
+    pDerivedObj->mouse_button_pressed = true;
 
     // Initialize enhancements (randomly select 3 enhancements)
     for (int i = 0; i < 3; i++)
@@ -59,7 +80,8 @@ Elements *New_Levelup(int label, Character *player)
         pDerivedObj->enhancements[i].icon = icons[randIndex];
         pDerivedObj->enhancements[i].width = al_get_bitmap_width(icons[randIndex]);
         pDerivedObj->enhancements[i].height = al_get_bitmap_height(icons[randIndex]);
-        if (!icons[randIndex]) {
+        if (!icons[randIndex])
+        {
             printf("Failed to load icon for enhancement %d\n", randIndex);
         }
     }
@@ -73,28 +95,25 @@ Elements *New_Levelup(int label, Character *player)
     return pObj;
 }
 
-
 void Levelup_update(Elements *self)
 {
+    static bool everRelease = false;
     Levelup *Obj = ((Levelup *)(self->pDerivedObj));
 
-    if (mouse_state[1] && !Obj->mouse_button_pressed)
+    if (mouse_state[1] && !Obj->mouse_button_pressed && everRelease)
     {
-        Levelup_handle_mouse_click(Obj, mouse.x, mouse.y);
+        Levelup_handle_mouse_click(Obj, self, mouse.x, mouse.y);
         Obj->mouse_button_pressed = true; // Set to true to indicate the button was pressed
-        everything_stop = false;
-        al_set_system_mouse_cursor(displayptr, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
-        self->dele = true;
     }
     else if (!mouse_state[1])
     {
+        everRelease = true;
         Obj->mouse_button_pressed = false; // Reset when the button is released
         Levelup_handle_mouse_hover(Obj, mouse.x, mouse.y);
     }
 }
 
-
-void Levelup_handle_mouse_click(Levelup *Obj, int mouse_x, int mouse_y)
+void Levelup_handle_mouse_click(Levelup *Obj, Elements *self, int mouse_x, int mouse_y)
 {
     int startX = (WIDTH - (3 * Obj->enhancements[0].width + 2 * SPACE)) / 2;
     int y = HEIGHT / 2;
@@ -134,9 +153,9 @@ void Levelup_handle_mouse_click(Levelup *Obj, int mouse_x, int mouse_y)
             {
                 Obj->player->poison_damage += Obj->player->poison_damage * 0.2;
             }
-
-            // Hide or destroy the level-up screen after selection
-            // Implement your logic to close or hide the level-up screen here
+            everything_stop = false;
+            al_set_system_mouse_cursor(displayptr, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
+            self->dele = true;
         }
     }
 }
@@ -168,7 +187,6 @@ void Levelup_handle_mouse_hover(Levelup *Obj, int mouse_x, int mouse_y)
     }
 }
 
-
 void Levelup_interact(Elements *self, Elements *tar) {}
 
 void Levelup_draw(Elements *self, float camera_offset_x, float camera_offset_y)
@@ -187,7 +205,6 @@ void Levelup_draw(Elements *self, float camera_offset_x, float camera_offset_y)
         al_draw_text(Obj->font, al_map_rgb(255, 255, 255), x + Obj->enhancements[i].width / 2, y + Obj->enhancements[i].height + 10, ALLEGRO_ALIGN_CENTER, Obj->enhancements[i].description);
     }
 }
-
 
 void Levelup_destory(Elements *self)
 {
