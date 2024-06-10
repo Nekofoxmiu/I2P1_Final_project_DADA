@@ -150,7 +150,7 @@ void Character_update(Elements *self)
         chara->xp -= chara->levelExpNeed;
         chara->levelExpNeed = chara->levelExpNeed * chara->ene_level;
         level_up = true;
-        everything_stop = true;
+        //everything_stop = true;
     }
 
     // 使用有限狀態機的概念處理不同狀態
