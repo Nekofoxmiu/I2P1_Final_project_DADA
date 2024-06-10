@@ -101,6 +101,18 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
     double radius = MIN_DISTANCE + ((double)rand() / RAND_MAX) * (MAX_DISTANCE - MIN_DISTANCE);
     pDerivedObj->x = target->x + (int)(radius * cos(angle));
     pDerivedObj->y = target->y + (int)(radius * sin(angle));
+    if(pDerivedObj->x < 20){
+        pDerivedObj->x = 20;
+    }
+    if(pDerivedObj->x > 4076){
+        pDerivedObj->x = 4076;
+    }
+    if(pDerivedObj->y < 20){
+        pDerivedObj->y = 20;
+    }
+    if(pDerivedObj->y > 4076){
+        pDerivedObj->y = 4076;
+    }
 
     // 根據敵人類型初始化敵人的屬性
     pDerivedObj->blood = configs[enemyType].blood * hp_enhance;
@@ -126,6 +138,7 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
+    pDerivedObj->nextattack = true;
 
     pObj->pDerivedObj = pDerivedObj;
     pObj->Draw = Enemy_draw;
@@ -199,12 +212,15 @@ void Enemy_update(Elements *self)
         else
         {
             enemy->state = ATK;
-            if (enemy->gif_status[enemy->state]->done)
-            {
+            if(enemy->nextattack == true){
                 if (target->armor > enemy->damage)
                     target->blood -= 1;
                 else
                     target->blood -= enemy->damage - target->armor;
+                enemy->nextattack = false;
+            }
+            if (enemy->gif_status[enemy->state]->done){
+                enemy->nextattack = true;
             }
         }
     }
