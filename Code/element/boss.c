@@ -82,9 +82,9 @@ Elements *New_Boss(int label, Character *target)
     Elements *pObj = New_Elements(label);
 
     // 加載動畫
-    pDerivedObj->gif_status[STOP] = algif_load_animation(configs[default_boss_L].stop);
-    pDerivedObj->gif_status[MOVE] = algif_load_animation(configs[default_boss_L].move);
-    pDerivedObj->gif_status[ATK] = algif_load_animation(configs[default_boss_L].attack);
+    pDerivedObj->gif_status[STOP] = algif_new_gif(configs[default_boss_L].stop, -1);
+    pDerivedObj->gif_status[MOVE] = algif_new_gif(configs[default_boss_L].move, -1);
+    pDerivedObj->gif_status[ATK] = algif_new_gif(configs[default_boss_L].attack, -1);
 
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
@@ -130,12 +130,25 @@ Elements *New_Boss(int label, Character *target)
 
 void Boss_update(Elements *self)
 {
+    static int prepause_state = -1;
     Boss *boss = (Boss *)(self->pDerivedObj);
+    if (everything_stop)
+    {
+        boss->state = STOP;
+        return;
+    }
+    else
+    {
+        if (prepause_state != -1)
+        {
+            boss->state = prepause_state;
+        }
+    }
     Character *target = boss->target;
 
     if (boss->blood <= 0)
     {
-        HandleDrop(boss->DropConfig, scene, boss->x, boss->y);
+        HandleDrop(boss->DropConfig, target, scene, boss->x, boss->y);
         self->dele = true;
         return;
     }
@@ -220,6 +233,7 @@ void Boss_update(Elements *self)
             boss->new_proj = true;
         }
     }
+    prepause_state = boss->state;
 }
 
 void Boss_draw(Elements *self, float camera_offset_x, float camera_offset_y)

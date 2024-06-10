@@ -67,6 +67,11 @@ void execute(Game *self)
                 spawn_wall = true; // 設置牆壁生成標誌位
             }
 
+            if (event.keyboard.keycode == ALLEGRO_KEY_P)
+            {
+                everything_stop = !everything_stop; // 設置遊戲暫停標誌位
+            }
+
             break;
         }
         case ALLEGRO_EVENT_KEY_UP:
