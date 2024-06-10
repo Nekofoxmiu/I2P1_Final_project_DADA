@@ -33,4 +33,6 @@ extern bool spawn_enemy;
 extern bool spawn_boss;
 extern bool spawn_wall;
 extern bool everything_stop;
+extern bool game_over;
+extern bool level_up;
 #endif
