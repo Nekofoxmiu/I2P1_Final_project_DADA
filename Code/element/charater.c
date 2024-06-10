@@ -357,7 +357,6 @@ void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y
     }
 }
 
-
 void Character_destory(Elements *self)
 {
     Character *Obj = ((Character *)(self->pDerivedObj));
@@ -366,6 +365,8 @@ void Character_destory(Elements *self)
     {
         algif_destroy_animation(Obj->gif_status[i]);
     }
+    al_destroy_bitmap(Obj->weapon);
+    algif_destroy_animation(Obj->weapon_attack);
     free(Obj->hitbox);
     free(Obj);
     free(self);
@@ -392,7 +393,7 @@ void _Character_update_position(Elements *self, int dx, int dy)
     else {
         chara->weapon_x = chara->x + 40;
     }
-    chara->weapon_y = chara->y + 10;
+    chara->weapon_y = chara->y + 15;
 }
 
 /*
