@@ -5,12 +5,18 @@
 #include <allegro5/allegro_acodec.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include "../algif5/src/algif.h"
 /*
    [Menu object]
 */
+
 typedef struct _Menu
 {
-    ALLEGRO_FONT *font;
+    ALLEGRO_FONT *font_large;
+    ALLEGRO_FONT *font_small;
+    ALLEGRO_BITMAP *background;
+    ALGIF_ANIMATION *torch;
+    ALGIF_ANIMATION *charactor;
     ALLEGRO_SAMPLE *song;
     ALLEGRO_SAMPLE_INSTANCE *sample_instance;
     int title_x, title_y;

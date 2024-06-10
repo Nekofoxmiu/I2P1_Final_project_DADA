@@ -18,6 +18,7 @@ extern const int WIDTH;
 extern const int HEIGHT;
 extern const int WORLD_WIDTH;
 extern const int WORLD_HEIGHT;
+extern const int PIXEL_SIZE;
 extern float camera_x;
 extern float camera_y;
 extern int window;
