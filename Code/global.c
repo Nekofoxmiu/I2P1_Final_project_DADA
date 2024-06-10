@@ -3,8 +3,9 @@
 #include <stdbool.h>
 // variables for global usage
 const double FPS = 60.0;
-const int WIDTH = 900;
-const int HEIGHT = 672;
+const int WIDTH = 960;
+const int HEIGHT = 640;
+const int PIXEL_SIZE = 32;
 // world size
 const int WORLD_WIDTH = 4096;
 const int WORLD_HEIGHT = 4096;
@@ -21,3 +22,4 @@ bool debug_mode = true;
 bool spawn_enemy = false;
 bool spawn_boss = false;
 bool spawn_wall = false;
+bool everything_stop = false;

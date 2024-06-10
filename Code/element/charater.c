@@ -106,7 +106,6 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->mp = configs[charaType].mp;
     pDerivedObj->xp = configs[charaType].xp;
 
-
     // 初始化動畫成員
     pDerivedObj->state = STOP;
     pDerivedObj->new_proj = false;
@@ -121,11 +120,25 @@ Elements *New_Character(int label, CharacterType charaType)
     return pObj;
 }
 
+
 void Character_update(Elements *self)
 {
-    // 使用有限狀態機的概念處理不同狀態
+    static int prepause_state = -1;
     Character *chara = ((Character *)(self->pDerivedObj));
+    if (everything_stop)
+    {
+        chara->state = STOP;
+        return;
+    }
+    else
+    {
+        if (prepause_state != -1)
+        {
+            chara->state = prepause_state;
+        }
+    }
 
+    // 使用有限狀態機的概念處理不同狀態
     float speed = chara->speed;
 
     // 解決初始化時碰撞箱不正確問題
@@ -133,7 +146,7 @@ void Character_update(Elements *self)
 
     if (chara->state == STOP)
     {
-        //mouse_state[1] 左鍵 2 右鍵 3 中鍵
+        // mouse_state[1] 左鍵 2 右鍵 3 中鍵
         if (mouse_state[1])
         {
             chara->state = ATK;
@@ -233,6 +246,7 @@ void Character_update(Elements *self)
             chara->new_proj = true;
         }
     }
+    prepause_state = chara->state;
 }
 
 void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
@@ -242,7 +256,7 @@ void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y
     ALLEGRO_BITMAP *frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (frame)
     {
-        //al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
+        // al_draw_bitmap(frame, chara->x, chara->y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
         al_draw_bitmap(frame, chara->x - camera_offset_x, chara->y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
     if (chara->state == ATK && chara->gif_status[chara->state]->display_index == 2)

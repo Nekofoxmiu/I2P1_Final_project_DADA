@@ -14,8 +14,6 @@ Scene *New_GameScene(int label)
     pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
     pDerivedObj->background = al_load_bitmap("assets/image/merged_map.png");
     pObj->pDerivedObj = pDerivedObj;
-    pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_blood_y = 30;
     // enemy status enhance (initial = 1)
     pDerivedObj->ene_hp_enhance = 1;
     pDerivedObj->ene_def_enhance = 1;
@@ -25,11 +23,18 @@ Scene *New_GameScene(int label)
     pDerivedObj->ene_spd_enhance = 1;
     // set timer
     pDerivedObj->start_time = al_get_time();
+    pDerivedObj->start_time_spawn = al_get_time();
     pDerivedObj->elapsed_time = 0;
-    pDerivedObj->chara_mp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_mp_y = 60;
-    pDerivedObj->chara_exp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_exp_y = 90;
+    pDerivedObj->elapsed_time_spawn = 0;
+    pDerivedObj->ene_spawn_rate = 0.5;
+    pDerivedObj->ene_spawn_acc = 0;
+    pDerivedObj->chara_blood_x = 20;
+    pDerivedObj->chara_blood_y = 20;
+    pDerivedObj->chara_mp_x = 20;
+    pDerivedObj->chara_mp_y = 35;
+    pDerivedObj->chara_exp_x = 20;
+    pDerivedObj->chara_exp_y = 50;
+    
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
     // _Register_elements(pObj, New_Teleport(Teleport_L));
@@ -63,6 +68,8 @@ void game_scene_update(Scene *self)
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
     double current_time = al_get_time();
     gs->elapsed_time = current_time - gs->start_time;
+    gs->elapsed_time_spawn = current_time - gs->start_time_spawn;
+
     // enhance every 10 seconds
     if(gs->elapsed_time > 10){
         gs->ene_atk_enhance *= 1.1;
@@ -72,8 +79,21 @@ void game_scene_update(Scene *self)
         gs->ene_atkdis_enhance *= 1.01;
         gs->ene_spd_enhance *= 1.1;
 
+        // enhance spawn rate
+        gs->ene_spawn_rate *= 1.1;
+
         // reset the start time
         gs->start_time = current_time;
+    }
+
+    // enemy spawn
+    if(gs->elapsed_time_spawn > 1){
+        gs->ene_spawn_acc += gs->ene_spawn_rate;
+        gs->start_time_spawn = current_time;
+    }
+    if(gs->ene_spawn_acc > 1){
+        gs->ene_spawn_acc--;
+        spawn_enemy = true;
     }
 
     // update every element

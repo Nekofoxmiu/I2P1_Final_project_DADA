@@ -50,6 +50,7 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
 }
 void Projectile_update(Elements *self)
 {
+    if(everything_stop) return;
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     _Projectile_update_position(self, Obj->v * Obj->vdx, Obj->v * Obj->vdy);
 

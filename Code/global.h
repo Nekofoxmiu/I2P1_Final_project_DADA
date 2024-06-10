@@ -18,6 +18,7 @@ extern const int WIDTH;
 extern const int HEIGHT;
 extern const int WORLD_WIDTH;
 extern const int WORLD_HEIGHT;
+extern const int PIXEL_SIZE;
 extern float camera_x;
 extern float camera_y;
 extern int window;
@@ -31,4 +32,5 @@ extern bool debug_mode;
 extern bool spawn_enemy;
 extern bool spawn_boss;
 extern bool spawn_wall;
+extern bool everything_stop;
 #endif

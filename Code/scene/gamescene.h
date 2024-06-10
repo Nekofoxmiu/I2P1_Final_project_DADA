@@ -47,9 +47,13 @@ typedef struct _GameScene
     double ene_atkdis_enhance;
     double ene_spd_enhance;
     double start_time;
+    double start_time_spawn;
     double elapsed_time;
+    double elapsed_time_spawn;
     int chara_mp_x, chara_mp_y;
     int chara_exp_x, chara_exp_y;
+    double ene_spawn_rate;
+    double ene_spawn_acc;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);

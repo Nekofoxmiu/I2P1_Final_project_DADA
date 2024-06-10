@@ -3,7 +3,7 @@
 /*
    [drop function]
 */
-Elements *New_Drop(int label, DropType type, int x, int y, double amount)
+Elements *New_Drop(int label, DropType type, Character *target, int x, int y, double amount)
 {
     Drop *pDerivedObj = (Drop *)malloc(sizeof(Drop));
     Elements *pObj = New_Elements(label);
@@ -33,6 +33,10 @@ Elements *New_Drop(int label, DropType type, int x, int y, double amount)
     pDerivedObj->type = type;
     pDerivedObj->life = 0;
     pDerivedObj->amount = amount;
+    pDerivedObj->attract_distance = 200;
+    pDerivedObj->attract_speed = 6;
+    pDerivedObj->target = target;
+
 
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Character_L;
@@ -46,11 +50,34 @@ Elements *New_Drop(int label, DropType type, int x, int y, double amount)
     return pObj;
 }
 void Drop_update(Elements *self) {
+    if(everything_stop) return;
     Drop *Obj = ((Drop *)(self->pDerivedObj));
+    Character *target = Obj->target;
+
     Obj->life++;
     if (Obj->life >= 1000) {
         self->dele = true;
     }
+
+    // 計算物品與角色之間的距離
+    int dx = target->x - Obj->x;
+    int dy = target->y - Obj->y;
+    double distance = sqrt(dx * dx + dy * dy);
+    int attractRange_x = 0;
+    int attractRange_y = 0;
+
+    if (distance < Obj->attract_distance) 
+    {
+        if (distance != 0)
+        {
+            attractRange_x = Obj->attract_speed * dx / distance;
+            attractRange_y = Obj->attract_speed * dy / distance;
+        }
+
+        _Drop_update_position(self, attractRange_x, attractRange_y);
+    }
+
+    
 }
 void Drop_interact(Elements *self, Elements *tar) {
     Drop *Obj = ((Drop *)(self->pDerivedObj));
@@ -83,7 +110,7 @@ void Drop_destory(Elements *self)
     free(self);
 }
 
-void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y)
+void HandleDrop(DropConfig dropConfig, Character *target, Scene *scene, double x, double y)
 {
 
     for (int i = 0; i < dropConfig.drop_amount; i++)
@@ -106,17 +133,17 @@ void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y)
 
             if (drop_type == XP_L)
             {
-                Elements *drop = New_Drop(Drop_L, XP_L, drop_x, drop_y, dropConfig.xp);
+                Elements *drop = New_Drop(Drop_L, XP_L, target, drop_x, drop_y, dropConfig.xp);
                 _Register_elements(scene, drop);
             }
             else if (drop_type == HP_L)
             {
-                Elements *drop = New_Drop(Drop_L, HP_L, drop_x, drop_y, dropConfig.hp);
+                Elements *drop = New_Drop(Drop_L, HP_L, target, drop_x, drop_y, dropConfig.hp);
                 _Register_elements(scene, drop);
             }
             else if (drop_type == MP_L)
             {
-                Elements *drop = New_Drop(Drop_L, MP_L, drop_x, drop_y, dropConfig.mp);
+                Elements *drop = New_Drop(Drop_L, MP_L, target, drop_x, drop_y, dropConfig.mp);
                 _Register_elements(scene, drop);
             }
         }
@@ -124,7 +151,7 @@ void HandleDrop(DropConfig dropConfig, Scene *scene, double x, double y)
 }
 
 
-void HandleOneTypeDrop(DropConfig dropConfig, Scene *scene, double x, double y, int type)
+void HandleOneTypeDrop(DropConfig dropConfig, Character *target, Scene *scene, double x, double y, int type)
 {
     for (int i = 0; i < dropConfig.drop_amount; i++)
     {
@@ -145,19 +172,30 @@ void HandleOneTypeDrop(DropConfig dropConfig, Scene *scene, double x, double y, 
 
             if (type == XP_L)
             {
-                Elements *drop = New_Drop(Drop_L, XP_L, drop_x, drop_y, dropConfig.xp);
+                Elements *drop = New_Drop(Drop_L, XP_L, target, drop_x, drop_y, dropConfig.xp);
                 _Register_elements(scene, drop);
             }
             else if (type == HP_L)
             {
-                Elements *drop = New_Drop(Drop_L, HP_L, drop_x, drop_y, dropConfig.hp);
+                Elements *drop = New_Drop(Drop_L, HP_L, target, drop_x, drop_y, dropConfig.hp);
                 _Register_elements(scene, drop);
             }
             else if (type == MP_L)
             {
-                Elements *drop = New_Drop(Drop_L, MP_L, drop_x, drop_y, dropConfig.mp);
+                Elements *drop = New_Drop(Drop_L, MP_L, target, drop_x, drop_y, dropConfig.mp);
                 _Register_elements(scene, drop);
             }
         }
     }
+}
+
+
+void _Drop_update_position(Elements *self, int dx, int dy)
+{
+    Drop *drop = ((Drop *)(self->pDerivedObj));
+    drop->x += dx;
+    drop->y += dy;
+    Shape *hitbox = drop->hitbox;
+    hitbox->update_center_x(hitbox, dx);
+    hitbox->update_center_y(hitbox, dy);
 }
