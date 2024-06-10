@@ -1,7 +1,7 @@
 default_boss_L stop assets/image/boss_stop.gif
 default_boss_L move assets/image/boss_move.gif
 default_boss_L attack assets/image/boss_attack.gif
-default_boss_L blood 20
+default_boss_L blood 40
 default_boss_L armor 1
 default_boss_L damage 2
 default_boss_L attack_distance 50
