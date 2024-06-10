@@ -8,6 +8,7 @@
 #include <math.h>
 #include <string.h>
 #include "../global.h"
+#include "levelup.h"
 
 void load_character_config(const char *filename, CharacterConfig config[])
 {
@@ -150,6 +151,8 @@ void Character_update(Elements *self)
         chara->xp -= chara->levelExpNeed;
         chara->levelExpNeed = chara->levelExpNeed * chara->ene_level;
         level_up = true;
+        Elements *levelup = New_Levelup(Levelup_L, chara);
+        _Register_elements(scene, levelup);
         everything_stop = true;
     }
 

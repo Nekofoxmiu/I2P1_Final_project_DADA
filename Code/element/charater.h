@@ -62,6 +62,8 @@ typedef struct _Character
     double speed;
     double levelExpNeed;
     double ene_level;
+    int bullet_num;
+    double poison_damage;
     int level;
     CharacterType type;
 } Character;
