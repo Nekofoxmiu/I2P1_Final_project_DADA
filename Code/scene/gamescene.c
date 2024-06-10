@@ -63,13 +63,18 @@ void game_scene_update(Scene *self)
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
     double current_time = al_get_time();
     gs->elapsed_time = current_time - gs->start_time;
-    // enhance every 10 sec
-    gs->ene_atk_enhance *= 1.1 * gs->elapsed_time / 6;
-    gs->ene_def_enhance *= 1.1 * gs->elapsed_time / 6;
-    gs->ene_hp_enhance *= 1.1 * gs->elapsed_time / 6;
-    gs->ene_chasedis_enhance *= 1.1 * gs->elapsed_time / 6;
-    gs->ene_atkdis_enhance *= 1.01 * gs->elapsed_time / 6;
-    gs->ene_spd_enhance *= 1.1 * gs->elapsed_time / 6;
+    // enhance every 10 seconds
+    if(gs->elapsed_time > 10){
+        gs->ene_atk_enhance *= 1.1;
+        gs->ene_def_enhance *= 1.1;
+        gs->ene_hp_enhance *= 1.1;
+        gs->ene_chasedis_enhance *= 1.1;
+        gs->ene_atkdis_enhance *= 1.01;
+        gs->ene_spd_enhance *= 1.1;
+
+        // reset the start time
+        gs->start_time = current_time;
+    }
 
     // update every element
     ElementVec allEle = _Get_all_elements(self);
@@ -154,9 +159,9 @@ void game_scene_draw(Scene *self)
     sprintf(blood, "Blood: %d", (int)chara->blood);
     sprintf(mp, "MP: %d", (int)chara->mp);
     sprintf(exp, "EXP: %d", (int)chara->xp);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_CENTRE, blood);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_CENTRE, mp);
-    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_CENTRE, exp);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
 
 
 }
