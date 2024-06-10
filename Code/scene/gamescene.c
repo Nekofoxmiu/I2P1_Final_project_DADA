@@ -25,10 +25,19 @@ Scene *New_GameScene(int label)
     // set timer
     pDerivedObj->start_time = al_get_time();
     pDerivedObj->start_time_spawn = al_get_time();
+    pDerivedObj->start_time_boss = al_get_time();
     pDerivedObj->elapsed_time = 0;
     pDerivedObj->elapsed_time_spawn = 0;
+    pDerivedObj->elapsed_time_boss = 0;
+    // spawn rate
     pDerivedObj->ene_spawn_rate = 0.5;
     pDerivedObj->ene_spawn_acc = 0;
+    pDerivedObj->boss_spawn_rate = 0.05;
+    pDerivedObj->boss_spawn_acc = 0;
+    // spawn type proportion
+    pDerivedObj->slime_proportion = 1;
+    pDerivedObj->dog_proportion = 0;
+    // character status
     pDerivedObj->chara_blood_x = 20;
     pDerivedObj->chara_blood_y = 20;
     pDerivedObj->chara_mp_x = 20;
@@ -70,6 +79,7 @@ void game_scene_update(Scene *self)
     double current_time = al_get_time();
     gs->elapsed_time = current_time - gs->start_time;
     gs->elapsed_time_spawn = current_time - gs->start_time_spawn;
+    gs->elapsed_time_boss = current_time - gs->start_time_boss;
 
     // enhance every 10 seconds
     if(gs->elapsed_time > 10){
@@ -77,11 +87,26 @@ void game_scene_update(Scene *self)
         gs->ene_def_enhance *= 1.1;
         gs->ene_hp_enhance *= 1.1;
         gs->ene_chasedis_enhance *= 1.1;
-        gs->ene_atkdis_enhance *= 1.01;
+        gs->ene_atkdis_enhance *= 1;
         gs->ene_spd_enhance *= 1.1;
 
         // enhance spawn rate
         gs->ene_spawn_rate *= 1.1;
+        gs->boss_spawn_rate *= 1.05;
+
+        // redistribute spawn type proportion
+        if(gs->slime_proportion > 0.5){
+            gs->slime_proportion *= 0.98;
+            gs->dog_proportion = (1 - gs->slime_proportion) * 0.95;
+        }
+        else if(gs->dog_proportion > 0.3){
+            gs->slime_proportion *= 0.99;
+            gs->dog_proportion *= 0.95;
+        }
+        else{
+            gs->slime_proportion *= 0.99;
+            gs->dog_proportion *= 0.99;
+        }
 
         // reset the start time
         gs->start_time = current_time;
@@ -97,15 +122,38 @@ void game_scene_update(Scene *self)
         spawn_enemy = true;
     }
 
+    // boss spawn
+    if(gs->elapsed_time_boss > 1){
+        gs->boss_spawn_acc += gs->boss_spawn_rate;
+        gs->start_time_boss = current_time;
+    }
+    if(gs->boss_spawn_acc > 1){
+        gs->boss_spawn_acc--;
+        spawn_boss = true;
+    }
+
     // update every element
     ElementVec allEle = _Get_all_elements(self);
 
     if (spawn_enemy)
     {
         spawn_enemy = false; // set the flag indicating the key is pressed
-        Elements *enemy = New_Enemy(Enemy_L, slime_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
-            gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
-        _Register_elements(self, enemy);
+        double x = (double) rand() / (RAND_MAX + 1.0);
+        if(x <= gs->slime_proportion){
+            Elements *enemy = New_Enemy(Enemy_L, slime_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+                gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
+            _Register_elements(self, enemy);
+        }
+        else if(x <= gs->slime_proportion + gs->dog_proportion){
+            Elements *enemy = New_Enemy(Enemy_L, dog_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+                gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
+            _Register_elements(self, enemy);
+        }
+        else{
+            Elements *enemy = New_Enemy(Enemy_L, dragon_L, (Character *)(_Get_all_elements(self).arr[Character_L]->pDerivedObj), 
+                gs->ene_atk_enhance, gs->ene_def_enhance, gs->ene_hp_enhance, gs->ene_chasedis_enhance, gs->ene_atkdis_enhance, gs->ene_spd_enhance);
+            _Register_elements(self, enemy);
+        }
     }
 
     if (spawn_boss)
