@@ -12,7 +12,7 @@ Scene *New_GameScene(int label)
     Scene *pObj = New_Scene(label);
     // setting derived object member
     pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
-    pDerivedObj->background = al_load_bitmap("assets/image/map.png");
+    pDerivedObj->background = al_load_bitmap("assets/image/merged_map.png");
     pObj->pDerivedObj = pDerivedObj;
     pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
     pDerivedObj->chara_blood_y = 30;

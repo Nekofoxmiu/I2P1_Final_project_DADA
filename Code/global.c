@@ -6,8 +6,8 @@ const double FPS = 60.0;
 const int WIDTH = 900;
 const int HEIGHT = 672;
 // world size
-const int WORLD_WIDTH = 2048;
-const int WORLD_HEIGHT = 2048;
+const int WORLD_WIDTH = 4096;
+const int WORLD_HEIGHT = 4096;
 float camera_x = 0;
 float camera_y = 0;
 int window = 0;
