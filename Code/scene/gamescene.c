@@ -76,60 +76,63 @@ void game_scene_update(Scene *self)
 {
     // update timer
     GameScene *gs = ((GameScene *)(self->pDerivedObj));
-    double current_time = al_get_time();
-    gs->elapsed_time = current_time - gs->start_time;
-    gs->elapsed_time_spawn = current_time - gs->start_time_spawn;
-    gs->elapsed_time_boss = current_time - gs->start_time_boss;
+    if (!everything_stop)
+    {
+        double current_time = al_get_time();
+        gs->elapsed_time = current_time - gs->start_time;
+        gs->elapsed_time_spawn = current_time - gs->start_time_spawn;
+        gs->elapsed_time_boss = current_time - gs->start_time_boss;
 
-    // enhance every 10 seconds
-    if(gs->elapsed_time > 10){
-        gs->ene_atk_enhance *= 1.1;
-        gs->ene_def_enhance *= 1.1;
-        gs->ene_hp_enhance *= 1.1;
-        gs->ene_chasedis_enhance *= 1.1;
-        gs->ene_atkdis_enhance *= 1;
-        gs->ene_spd_enhance *= 1.1;
+        // enhance every 10 seconds
+        if(gs->elapsed_time > 10){
+            gs->ene_atk_enhance *= 1.1;
+            gs->ene_def_enhance *= 1.1;
+            gs->ene_hp_enhance *= 1.1;
+            gs->ene_chasedis_enhance *= 1.1;
+            gs->ene_atkdis_enhance *= 1;
+            gs->ene_spd_enhance *= 1.1;
 
-        // enhance spawn rate
-        gs->ene_spawn_rate *= 1.1;
-        gs->boss_spawn_rate *= 1.05;
+            // enhance spawn rate
+            gs->ene_spawn_rate *= 1.1;
+            gs->boss_spawn_rate *= 1.05;
 
-        // redistribute spawn type proportion
-        if(gs->slime_proportion > 0.5){
-            gs->slime_proportion *= 0.98;
-            gs->dog_proportion = (1 - gs->slime_proportion) * 0.95;
+            // redistribute spawn type proportion
+            if(gs->slime_proportion > 0.5){
+                gs->slime_proportion *= 0.98;
+                gs->dog_proportion = (1 - gs->slime_proportion) * 0.95;
+            }
+            else if(gs->dog_proportion > 0.3){
+                gs->slime_proportion *= 0.99;
+                gs->dog_proportion *= 0.95;
+            }
+            else{
+                gs->slime_proportion *= 0.99;
+                gs->dog_proportion *= 0.99;
+            }
+
+            // reset the start time
+            gs->start_time = current_time;
         }
-        else if(gs->dog_proportion > 0.3){
-            gs->slime_proportion *= 0.99;
-            gs->dog_proportion *= 0.95;
+
+        // enemy spawn
+        if(gs->elapsed_time_spawn > 1){
+            gs->ene_spawn_acc += gs->ene_spawn_rate;
+            gs->start_time_spawn = current_time;
         }
-        else{
-            gs->slime_proportion *= 0.99;
-            gs->dog_proportion *= 0.99;
+        if(gs->ene_spawn_acc > 1){
+            gs->ene_spawn_acc--;
+            spawn_enemy = true;
         }
 
-        // reset the start time
-        gs->start_time = current_time;
-    }
-
-    // enemy spawn
-    if(gs->elapsed_time_spawn > 1){
-        gs->ene_spawn_acc += gs->ene_spawn_rate;
-        gs->start_time_spawn = current_time;
-    }
-    if(gs->ene_spawn_acc > 1){
-        gs->ene_spawn_acc--;
-        spawn_enemy = true;
-    }
-
-    // boss spawn
-    if(gs->elapsed_time_boss > 1){
-        gs->boss_spawn_acc += gs->boss_spawn_rate;
-        gs->start_time_boss = current_time;
-    }
-    if(gs->boss_spawn_acc > 1){
-        gs->boss_spawn_acc--;
-        spawn_boss = true;
+        // boss spawn
+        if(gs->elapsed_time_boss > 1){
+            gs->boss_spawn_acc += gs->boss_spawn_rate;
+            gs->start_time_boss = current_time;
+        }
+        if(gs->boss_spawn_acc > 1){
+            gs->boss_spawn_acc--;
+            spawn_boss = true;
+        }
     }
 
     // update every element
