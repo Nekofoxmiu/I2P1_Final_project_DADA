@@ -22,7 +22,8 @@ typedef enum CharacterMoveType
 {
     STOP = 0,
     MOVE,
-    ATK
+    ATK,
+    SKILL
 } CharacterMoveType;
 
 typedef struct _CharacterConfig
@@ -30,6 +31,7 @@ typedef struct _CharacterConfig
     char stop[100];
     char move[100];
     char attack[100];
+    char skill[100];
     double blood;
     double armor;
     double damage;
@@ -64,6 +66,7 @@ typedef struct _Character
     double ene_level;
     int level;
     CharacterType type;
+    bool aura;
 } Character;
 
 Elements *New_Character(int label, CharacterType charaType);
