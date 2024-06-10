@@ -25,3 +25,4 @@ bool spawn_wall = false;
 bool everything_stop = false;
 bool game_over = false;
 bool level_up = false;
+ALLEGRO_DISPLAY *displayptr = NULL;
