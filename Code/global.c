@@ -23,3 +23,5 @@ bool spawn_enemy = false;
 bool spawn_boss = false;
 bool spawn_wall = false;
 bool everything_stop = false;
+bool game_over = false;
+bool level_up = false;
