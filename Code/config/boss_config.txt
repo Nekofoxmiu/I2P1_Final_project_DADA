@@ -1,0 +1,13 @@
+default_boss_L stop assets/image/boss_stop.gif
+default_boss_L move assets/image/boss_move.gif
+default_boss_L attack assets/image/boss_attack.gif
+default_boss_L blood 20
+default_boss_L armor 1
+default_boss_L damage 2
+default_boss_L attack_distance 50
+default_boss_L xp_drop_amount 20
+default_boss_L hp_drop_amount 20
+default_boss_L mp_drop_amount 5
+default_boss_L drop_amount 3
+default_boss_L drop_rate 100
+

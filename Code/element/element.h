@@ -9,6 +9,16 @@ typedef void (*fptrEleUpdate)(Elements *);
 typedef void (*fptrEleInteract)(Elements *, Elements *);
 typedef void (*fptrEleGetPosition)(Elements *, float *, float *);
 typedef void (*fptrEleDestroy)(Elements *);
+
+typedef struct _DropConfig
+{
+    double xp;
+    double hp;
+    double mp;
+    double drop_rate;
+    double drop_amount;
+} DropConfig;
+
 struct _Elements
 {
     int label; // the class of the element
@@ -26,4 +36,5 @@ struct _Elements
 };
 Elements *New_Elements(int label);
 void NormalizeV(double *dx, double *dy);
+
 #endif

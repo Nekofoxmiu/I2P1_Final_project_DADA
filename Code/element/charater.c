@@ -44,6 +44,10 @@ void load_character_config(const char *filename, CharacterConfig config[])
                 config[charaType].damage = atof(value);
             else if (strcmp(state, "speed") == 0)
                 config[charaType].speed = atof(value);
+            else if (strcmp(state, "mp") == 0)
+                config[charaType].mp = atof(value);
+            else if (strcmp(state, "xp") == 0)
+                config[charaType].xp = atof(value);
         }
     }
 
@@ -99,6 +103,9 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->armor = configs[charaType].armor;
     pDerivedObj->damage = configs[charaType].damage;
     pDerivedObj->speed = configs[charaType].speed;
+    pDerivedObj->mp = configs[charaType].mp;
+    pDerivedObj->xp = configs[charaType].xp;
+
 
     // 初始化動畫成員
     pDerivedObj->state = STOP;

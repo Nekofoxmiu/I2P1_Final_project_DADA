@@ -7,6 +7,11 @@ slime_L damage 2
 slime_L chase_distance 600
 slime_L attack_distance 50
 slime_L chase_speed 2
+slime_L xp_drop_amount 20
+slime_L hp_drop_amount 20
+slime_L mp_drop_amount 5
+slime_L drop_amount 1
+slime_L drop_rate 20
 
 dog_L stop assets/image/dog_stop.gif
 dog_L move assets/image/dog_move.gif
@@ -17,6 +22,11 @@ dog_L damage 4
 dog_L chase_distance 600
 dog_L attack_distance 50
 dog_L chase_speed 2
+dog_L xp_drop_amount 20
+dog_L hp_drop_amount 20
+dog_L mp_drop_amount 5
+dog_L drop_amount 1
+dog_L drop_rate 20
 
 dragon_L stop assets/image/dragon_stop.gif
 dragon_L move assets/image/dragon_move.gif
@@ -27,3 +37,8 @@ dragon_L damage 10
 dragon_L chase_distance 600
 dragon_L attack_distance 50
 dragon_L chase_speed 2
+dragon_L xp_drop_amount 20
+dragon_L hp_drop_amount 20
+dragon_L mp_drop_amount 5
+dragon_L drop_amount 1
+dragon_L drop_rate 20

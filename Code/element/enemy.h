@@ -3,6 +3,7 @@
 
 #include "element.h"
 #include "charater.h"
+#include "drop.h"
 #include "../shapes/Shape.h"
 #include "../algif5/src/algif.h"
 
@@ -24,6 +25,7 @@ typedef struct _EnemyConfig
     double chase_distance;
     double attack_distance;
     double chase_speed;
+    DropConfig dropConfig;
 } EnemyConfig;
 
 typedef struct _Enemy
@@ -38,6 +40,7 @@ typedef struct _Enemy
     double chase_distance;
     double attack_distance;
     double chase_speed;
+    DropConfig dropConfig;
     Character *target;              // the character to track
     ALGIF_ANIMATION *gif_status[3]; // gif for each state: 0: stop, 1: move, 2: attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;
@@ -47,7 +50,8 @@ typedef struct _Enemy
     EnemyType type; // 新增的成員，用來存儲敵人的類型
 } Enemy;
 
-Elements *New_Enemy(int label, EnemyType enemyType, Character *target);
+Elements *New_Enemy(int label, EnemyType enemyType, Character *target, 
+    double atk_enhance, double def_enhance, double hp_enhance, double chasedis_enhance, double atkdis_enhance, double spd_enhance);
 void _Enemy_update_position(Elements *self, int dx, int dy);
 void Enemy_update(Elements *self);
 void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y);

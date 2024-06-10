@@ -25,5 +25,6 @@ void Wall_interact(Elements *self, Elements *tar);
 void Wall_draw(Elements *self, float camera_offset_x, float camera_offset_y);
 void Wall_destroy(Elements *self);
 void _handle_collision(Elements *self, Elements *tar, void (*update_position)(Elements *, int, int));
+void _Wall_build_map(Wall *Obj, float camera_offset_x, float camera_offset_y);
 
 #endif
