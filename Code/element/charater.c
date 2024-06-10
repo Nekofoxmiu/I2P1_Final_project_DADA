@@ -89,6 +89,9 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->y = HEIGHT / 2 - pDerivedObj->height / 2;
     pDerivedObj->weapon_dir_x = pDerivedObj->x;
     pDerivedObj->weapon_dir_y = pDerivedObj->y;
+    pDerivedObj->level = 0;
+    pDerivedObj->levelExpNeed = 100;
+    pDerivedObj->ene_level = 1.1;
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x,
                                         pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
@@ -99,10 +102,12 @@ Elements *New_Character(int label, CharacterType charaType)
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
 
     // 根據配置文件初始化屬性
+    pDerivedObj->max_blood = configs[charaType].blood;
     pDerivedObj->blood = configs[charaType].blood;
     pDerivedObj->armor = configs[charaType].armor;
     pDerivedObj->damage = configs[charaType].damage;
     pDerivedObj->speed = configs[charaType].speed;
+    pDerivedObj->max_mp = configs[charaType].mp;
     pDerivedObj->mp = configs[charaType].mp;
     pDerivedObj->xp = configs[charaType].xp;
 
@@ -136,6 +141,16 @@ void Character_update(Elements *self)
         {
             chara->state = prepause_state;
         }
+    }
+
+    // 升級邏輯
+    if (chara->xp >= chara->levelExpNeed)
+    {
+        chara->level++;
+        chara->xp -= chara->levelExpNeed;
+        chara->levelExpNeed = chara->levelExpNeed * chara->ene_level;
+        level_up = true;
+        //everything_stop = true;
     }
 
     // 使用有限狀態機的概念處理不同狀態

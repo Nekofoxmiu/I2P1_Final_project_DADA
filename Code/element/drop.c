@@ -9,11 +9,16 @@ Elements *New_Drop(int label, DropType type, Character *target, int x, int y, do
     Elements *pObj = New_Elements(label);
     // setting derived object member
 
-    if (type == XP_L) {
+    if (type == XP_L)
+    {
         pDerivedObj->img = al_load_bitmap("assets/image/red_potion.png");
-    } else if (type == HP_L) {
+    }
+    else if (type == HP_L)
+    {
         pDerivedObj->img = al_load_bitmap("assets/image/red_potion.png");
-    } else if (type == MP_L) {
+    }
+    else if (type == MP_L)
+    {
         pDerivedObj->img = al_load_bitmap("assets/image/red_potion.png");
     }
 
@@ -22,21 +27,20 @@ Elements *New_Drop(int label, DropType type, Character *target, int x, int y, do
     pDerivedObj->pick_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(pDerivedObj->pick_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->pick_Sound, al_get_default_mixer());
-    
+
     pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
     pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
     pDerivedObj->x = x;
     pDerivedObj->y = y;
     pDerivedObj->hitbox = New_Circle(pDerivedObj->x + pDerivedObj->width / 3,
-                                        pDerivedObj->y + pDerivedObj->height / 3,
-                                        min(pDerivedObj->width, pDerivedObj->height) / 2);
+                                     pDerivedObj->y + pDerivedObj->height / 3,
+                                     min(pDerivedObj->width, pDerivedObj->height) / 2);
     pDerivedObj->type = type;
     pDerivedObj->life = 0;
     pDerivedObj->amount = amount;
     pDerivedObj->attract_distance = 200;
     pDerivedObj->attract_speed = 6;
     pDerivedObj->target = target;
-
 
     // setting the interact object
     pObj->inter_obj[pObj->inter_len++] = Character_L;
@@ -49,13 +53,16 @@ Elements *New_Drop(int label, DropType type, Character *target, int x, int y, do
     pObj->Destroy = Drop_destory;
     return pObj;
 }
-void Drop_update(Elements *self) {
-    if(everything_stop) return;
+void Drop_update(Elements *self)
+{
+    if (everything_stop)
+        return;
     Drop *Obj = ((Drop *)(self->pDerivedObj));
     Character *target = Obj->target;
 
     Obj->life++;
-    if (Obj->life >= 1000) {
+    if (Obj->life >= 1000)
+    {
         self->dele = true;
     }
 
@@ -66,7 +73,7 @@ void Drop_update(Elements *self) {
     int attractRange_x = 0;
     int attractRange_y = 0;
 
-    if (distance < Obj->attract_distance) 
+    if (distance < Obj->attract_distance)
     {
         if (distance != 0)
         {
@@ -76,21 +83,32 @@ void Drop_update(Elements *self) {
 
         _Drop_update_position(self, attractRange_x, attractRange_y);
     }
-
-    
 }
-void Drop_interact(Elements *self, Elements *tar) {
+void Drop_interact(Elements *self, Elements *tar)
+{
     Drop *Obj = ((Drop *)(self->pDerivedObj));
     Character *chara = ((Character *)(tar->pDerivedObj));
-    if (Obj->hitbox->overlap(Obj->hitbox, chara->hitbox)) {
+    if (Obj->hitbox->overlap(Obj->hitbox, chara->hitbox))
+    {
         al_play_sample_instance(Obj->pick_Sound);
         Character *chara = (Character *)tar->pDerivedObj;
-        if (Obj->type == XP_L) {
+        if (Obj->type == XP_L)
+        {
             chara->xp += Obj->amount;
-        } else if (Obj->type == HP_L) {
-            chara->blood += Obj->amount;
-        } else if (Obj->type == MP_L) {
-            chara->mp += Obj->amount;
+        }
+        else if (Obj->type == HP_L)
+        {
+            if(chara->blood + Obj->amount > chara->max_blood)
+                chara->blood = chara->max_blood;
+            else
+                chara->blood += Obj->amount;
+        }
+        else if (Obj->type == MP_L)
+        {
+            if(chara->mp + Obj->amount > chara->max_mp)
+                chara->mp = chara->max_mp;
+            else
+                chara->mp += Obj->amount;
         }
         self->dele = true;
     }
@@ -98,7 +116,7 @@ void Drop_interact(Elements *self, Elements *tar) {
 void Drop_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Drop *Obj = ((Drop *)(self->pDerivedObj));
-    //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+    // al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
     al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
 }
 void Drop_destory(Elements *self)
@@ -150,7 +168,6 @@ void HandleDrop(DropConfig dropConfig, Character *target, Scene *scene, double x
     }
 }
 
-
 void HandleOneTypeDrop(DropConfig dropConfig, Character *target, Scene *scene, double x, double y, int type)
 {
     for (int i = 0; i < dropConfig.drop_amount; i++)
@@ -188,7 +205,6 @@ void HandleOneTypeDrop(DropConfig dropConfig, Character *target, Scene *scene, d
         }
     }
 }
-
 
 void _Drop_update_position(Elements *self, int dx, int dy)
 {

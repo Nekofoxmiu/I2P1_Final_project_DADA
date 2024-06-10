@@ -6,6 +6,8 @@ default_chara_L armor 1
 default_chara_L damage 100
 default_chara_L speed 5
 default_chara_L mp 20
+default_chara_L xp 0
+
 
 fire_chara_L stop assets/image/chara_stop.gif
 fire_chara_L move assets/image/chara_move.gif
