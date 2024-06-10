@@ -134,15 +134,30 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
     return pObj;
 }
 
+static int prepause_state = -1;
+
 void Enemy_update(Elements *self)
 {
     Enemy *enemy = (Enemy *)(self->pDerivedObj);
+    if(everything_stop) 
+    {
+        enemy->state = STOP;
+        return;
+    }
+    else
+    {
+        if(prepause_state != -1)
+        {
+            enemy->state = prepause_state;
+        }
+    }
+    
     Character *target = enemy->target;
 
     if (enemy->blood <= 0)
     {
         target->xp += enemy->dropConfig.xp;
-        HandleDrop(enemy->dropConfig, scene, enemy->x, enemy->y);
+        HandleDrop(enemy->dropConfig, target, scene, enemy->x, enemy->y);
         self->dele = true;
         return;
     }
@@ -197,6 +212,7 @@ void Enemy_update(Elements *self)
     {
         enemy->state = STOP;
     }
+    prepause_state = enemy->state;
 }
 
 void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y)

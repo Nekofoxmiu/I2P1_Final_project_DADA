@@ -14,8 +14,6 @@ Scene *New_GameScene(int label)
     pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
     pDerivedObj->background = al_load_bitmap("assets/image/merged_map.png");
     pObj->pDerivedObj = pDerivedObj;
-    pDerivedObj->chara_blood_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_blood_y = 30;
     // enemy status enhance (initial = 1)
     pDerivedObj->ene_hp_enhance = 1;
     pDerivedObj->ene_def_enhance = 1;
@@ -26,10 +24,12 @@ Scene *New_GameScene(int label)
     // set timer
     pDerivedObj->start_time = al_get_time();
     pDerivedObj->elapsed_time = 0;
-    pDerivedObj->chara_mp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_mp_y = 60;
-    pDerivedObj->chara_exp_x = WIDTH / 9 > 120 ? WIDTH / 9 : 120;
-    pDerivedObj->chara_exp_y = 90;
+    pDerivedObj->chara_blood_x = 20;
+    pDerivedObj->chara_blood_y = 20;
+    pDerivedObj->chara_mp_x = 20;
+    pDerivedObj->chara_mp_y = 35;
+    pDerivedObj->chara_exp_x = 20;
+    pDerivedObj->chara_exp_y = 50;
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
     // _Register_elements(pObj, New_Teleport(Teleport_L));
