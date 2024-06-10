@@ -51,7 +51,7 @@ typedef struct _Character
     ALLEGRO_BITMAP *weapon;
     ALGIF_ANIMATION *weapon_attack;
     int state;                      // the state of character
-    ALGIF_ANIMATION *gif_status[3]; // gif for each state. 0: stop, 1: move, 2:attack
+    ALGIF_ANIMATION *gif_status[4]; // gif for each state. 0: stop, 1: move, 2:attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
@@ -68,6 +68,8 @@ typedef struct _Character
     double speed;
     double levelExpNeed;
     double ene_level;
+    int bullet_num;
+    double poison_damage;
     int level;
     CharacterType type;
     bool aura;

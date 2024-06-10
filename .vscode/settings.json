@@ -9,7 +9,6 @@
         "charater.h": "c",
         "boss.h": "c",
         "projectile.h": "c",
-        "allegro_acodec.h": "c",
-        "algif.h": "c"
+        "gamewindow.h": "c"
     }
 }

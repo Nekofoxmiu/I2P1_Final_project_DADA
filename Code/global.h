@@ -37,4 +37,5 @@ extern bool game_over;
 extern bool level_up;
 extern double highest_record;
 extern double score;
+extern ALLEGRO_DISPLAY *displayptr;
 #endif
