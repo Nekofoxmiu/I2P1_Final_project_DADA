@@ -22,7 +22,8 @@ typedef enum CharacterMoveType
 {
     STOP = 0,
     MOVE,
-    ATK
+    ATK,
+    SKILL
 } CharacterMoveType;
 
 typedef struct _CharacterConfig
@@ -30,6 +31,7 @@ typedef struct _CharacterConfig
     char stop[100];
     char move[100];
     char attack[100];
+    char skill[100];
     double blood;
     double armor;
     double damage;
@@ -45,7 +47,7 @@ typedef struct _Character
     char dir;          // 'L' for left, 'R' for right
     double weapon_dir_x, weapon_dir_y; // rotation of the weapon
     int state;                      // the state of character
-    ALGIF_ANIMATION *gif_status[3]; // gif for each state. 0: stop, 1: move, 2:attack
+    ALGIF_ANIMATION *gif_status[4]; // gif for each state. 0: stop, 1: move, 2:attack
     ALLEGRO_SAMPLE_INSTANCE *atk_Sound;
     int anime;      // counting the time of animation
     int anime_time; // indicate how long the animation
@@ -62,8 +64,11 @@ typedef struct _Character
     double speed;
     double levelExpNeed;
     double ene_level;
+    int bullet_num;
+    double poison_damage;
     int level;
     CharacterType type;
+    bool aura;
 } Character;
 
 Elements *New_Character(int label, CharacterType charaType);
