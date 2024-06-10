@@ -21,6 +21,7 @@ Scene *New_GameScene(int label)
     pDerivedObj->ene_chasedis_enhance = 1;
     pDerivedObj->ene_atkdis_enhance = 1;
     pDerivedObj->ene_spd_enhance = 1;
+
     // set timer
     pDerivedObj->start_time = al_get_time();
     pDerivedObj->start_time_spawn = al_get_time();
@@ -176,9 +177,9 @@ void game_scene_draw(Scene *self)
     char blood[20];
     char mp[20];
     char exp[20];
-    sprintf(blood, "Blood: %d", (int)chara->blood);
-    sprintf(mp, "MP: %d", (int)chara->mp);
-    sprintf(exp, "EXP: %d", (int)chara->xp);
+    sprintf(blood, "Blood: %d / %d", (int)chara->blood, (int)chara->max_blood);
+    sprintf(mp, "MP: %d / %d", (int)chara->mp, (int)chara->max_mp);
+    sprintf(exp, "EXP: %d / %d", (int)chara->xp, (int)chara->levelExpNeed);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);

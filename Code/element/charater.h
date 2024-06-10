@@ -52,11 +52,17 @@ typedef struct _Character
     bool new_proj;
     Shape *hitbox; // the hitbox of object
     double xp;
+    double max_xp;
     double mp;
+    double max_mp;
     double blood;
+    double max_blood;
     double armor;
     double damage;
     double speed;
+    double levelExpNeed;
+    double ene_level;
+    int level;
     CharacterType type;
 } Character;
 
