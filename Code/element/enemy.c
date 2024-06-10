@@ -64,7 +64,8 @@ void load_enemy_config(const char *filename, EnemyConfig configs[])
     fclose(file);
 }
 
-Elements *New_Enemy(int label, EnemyType enemyType, Character *target)
+Elements *New_Enemy(int label, EnemyType enemyType, Character *target, 
+    double atk_enhance, double def_enhance, double hp_enhance, double chasedis_enhance, double atkdis_enhance, double spd_enhance)
 {
     static EnemyConfig configs[100];
     static int configs_loaded = 0;
@@ -99,12 +100,12 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target)
     pDerivedObj->y = target->y + (int)(radius * sin(angle));
 
     // 根據敵人類型初始化敵人的屬性
-    pDerivedObj->blood = configs[enemyType].blood;
-    pDerivedObj->armor = configs[enemyType].armor;
-    pDerivedObj->damage = configs[enemyType].damage;
-    pDerivedObj->chase_distance = configs[enemyType].chase_distance;
-    pDerivedObj->attack_distance = configs[enemyType].attack_distance;
-    pDerivedObj->chase_speed = configs[enemyType].chase_speed;
+    pDerivedObj->blood = configs[enemyType].blood * hp_enhance;
+    pDerivedObj->armor = configs[enemyType].armor * def_enhance;
+    pDerivedObj->damage = configs[enemyType].damage * atk_enhance;
+    pDerivedObj->chase_distance = configs[enemyType].chase_distance * chasedis_enhance;
+    pDerivedObj->attack_distance = configs[enemyType].attack_distance * atkdis_enhance;
+    pDerivedObj->chase_speed = configs[enemyType].chase_speed * spd_enhance;
     pDerivedObj->dropConfig.xp = configs[enemyType].dropConfig.xp;
     pDerivedObj->dropConfig.hp = configs[enemyType].dropConfig.hp;
     pDerivedObj->dropConfig.mp = configs[enemyType].dropConfig.mp;
