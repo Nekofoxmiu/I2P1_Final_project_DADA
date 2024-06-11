@@ -9,7 +9,7 @@ default_chara_L damage 25
 default_chara_L speed 5
 default_chara_L mp 20
 default_chara_L xp 0
-default_chara_L aura_dis 20
+default_chara_L aura_dis 200
 default_chara_L aura_cool 20
 default_chara_L aura_time 5
 default_chara_L aura_dmg 15
