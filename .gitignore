@@ -33,3 +33,4 @@ Code/bin/
 # 忽略 IDE 設定文件（根據實際使用的 IDE 添加）
 .idea/
 *.code-workspace
+*.vscode

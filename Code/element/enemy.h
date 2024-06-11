@@ -49,6 +49,8 @@ typedef struct _Enemy
     Shape *hitbox;
     EnemyType type; // 新增的成員，用來存儲敵人的類型
     bool nextattack;
+    double aura_dmg_start_time;
+    double aura_dmg_elapsed_time;
 } Enemy;
 
 Elements *New_Enemy(int label, EnemyType enemyType, Character *target, 
