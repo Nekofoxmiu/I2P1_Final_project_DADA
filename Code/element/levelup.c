@@ -1,6 +1,6 @@
 #include "levelup.h"
 
-#define FONT_SIZE 10
+#define FONT_SIZE 40
 #define SPACE 200
 
 const char *descriptions[] = {
@@ -58,7 +58,7 @@ Elements *New_Levelup(int label, Character *player)
     Levelup *pDerivedObj = (Levelup *)malloc(sizeof(Levelup));
     Elements *pObj = New_Elements(label);
     // setting derived object member
-    pDerivedObj->font = al_load_ttf_font("assets/font/pirulen.ttf", FONT_SIZE, 0);
+    pDerivedObj->font = al_load_ttf_font("assets/font/pixel_font.ttf", FONT_SIZE, 0);
     pDerivedObj->background = al_load_bitmap("assets/image/upgrade/background.jpg");
     if (!pDerivedObj->background)
     {

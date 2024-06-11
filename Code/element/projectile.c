@@ -1,4 +1,5 @@
 #include "projectile.h"
+#include "explosion.h"
 #include "../shapes/Circle.h"
 
 #define M_PI 3.14159265358979323846
@@ -12,9 +13,6 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     // setting derived object member
     pDerivedObj->creator = creator;
     pDerivedObj->img = al_load_bitmap("assets/image/projectile.png");
-    pDerivedObj->hit_explosion = algif_new_gif("assets/image/hit_explosion.gif", -1);
-    pDerivedObj->explode = false;
-    pDerivedObj->explosion_start_time = 0;
     pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
     pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
     pDerivedObj->damage = damage;
@@ -51,20 +49,7 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
 
     return pObj;
 }
-void _Projectile_explode(Elements *self) {
-    Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    Obj->explode = true;
-    Obj->explosion_start_time = al_get_time();
-}
-void _Projectile_draw_explosion(Projectile *Obj) {
-    double current_time = al_get_time();
-    double elapsed_time = current_time - Obj->explosion_start_time;
-    ALLEGRO_BITMAP* frame = algif_get_bitmap(Obj->hit_explosion, elapsed_time);
 
-    if (frame) {
-        al_draw_bitmap(frame, Obj->x, Obj->y, 0);
-    }
-}
 void Projectile_update(Elements *self)
 {
     if(everything_stop) return;
@@ -118,9 +103,9 @@ void Projectile_interact(Elements *self, Elements *tar)
         Tree *tree = ((Tree *)(tar->pDerivedObj));
         if (tree->hitbox->overlap(tree->hitbox, Obj->hitbox))
         {
-            Obj->explosion_start_time = al_get_time();
-            _Projectile_explode(self);
             self->dele = true;
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
         }
     }
     else if (tar->label == Character_L)
@@ -152,6 +137,8 @@ void Projectile_interact(Elements *self, Elements *tar)
             {
                 enemy->blood -= Obj->damage - enemy->armor;
             }
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
             self->dele = true;
 
             printf("enemy blood: %f\n", enemy->blood);
@@ -170,6 +157,8 @@ void Projectile_interact(Elements *self, Elements *tar)
             {
                 boss->blood -= Obj->damage - boss->armor;
             }
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
             self->dele = true;
 
             printf("boss blood: %f\n", boss->blood);
@@ -194,7 +183,6 @@ void Projectile_destory(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     al_destroy_bitmap(Obj->img);
-    algif_destroy_animation(Obj->hit_explosion);
     free(Obj->hitbox);
     free(Obj);
     free(self);
