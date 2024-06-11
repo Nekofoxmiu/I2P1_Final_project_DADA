@@ -55,6 +55,14 @@ void load_character_config(const char *filename, CharacterConfig config[])
                 config[charaType].mp = atof(value);
             else if (strcmp(state, "xp") == 0)
                 config[charaType].xp = atof(value);
+            else if (strcmp(state, "aura_dis") == 0)
+                config[charaType].aura_dis = atof(value);
+            else if (strcmp(state, "aura_cool") == 0)
+                config[charaType].aura_cool = atof(value);
+            else if (strcmp(state, "aura_time") == 0)
+                config[charaType].aura_time = atof(value);
+            else if (strcmp(state, "aura_dmg") == 0)
+                config[charaType].aura_dmg = atof(value);
         }
     }
 
@@ -124,6 +132,14 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->mp = configs[charaType].mp;
     pDerivedObj->xp = configs[charaType].xp;
     pDerivedObj->bullet_num = 1;
+    pDerivedObj->aura_dis = configs[charaType].aura_dis;
+    pDerivedObj->aura_cool = configs[charaType].aura_cool;
+    pDerivedObj->aura_time = configs[charaType].aura_time;
+    pDerivedObj->aura_dmg = configs[charaType].aura_dmg;
+
+    pDerivedObj->aura_start_time = 0;
+    pDerivedObj->aura_elapsed_time = 0;
+    pDerivedObj->aura_usable = true;
 
     // 初始化動畫成員
     pDerivedObj->state = STOP;
@@ -186,7 +202,8 @@ void Character_update(Elements *self)
         {
             chara->state = MOVE;
         }
-        else if(mouse_state[3]){
+        else if ((mouse_state[2] || mouse_state[3])  && chara->aura_usable)
+        {
             chara->state = SKILL;
         }
     }
@@ -196,7 +213,8 @@ void Character_update(Elements *self)
         {
             chara->state = ATK;
         }
-        else if(mouse_state[3]){
+        else if ((mouse_state[2] || mouse_state[3]) && chara->aura_usable)
+        {
             chara->state = SKILL;
         }
         else
@@ -321,15 +339,46 @@ void Character_update(Elements *self)
             }
 
             _Character_update_position(self, dx, dy);
-        }       
+        }
+
+        // 確認技能是否處於激活狀態
+        if (chara->gif_status[SKILL]->display_index == 2)
+        {
+            if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
+            {
+                chara->mp -= 5;
+                chara->aura = true;
+                chara->aura_usable = false;
+                chara->aura_start_time = al_get_time();
+            }
+        }
+
+        // 處理技能持續時間
+        if (chara->aura && chara->aura_start_time != 0)
+        {
+            double current_time = al_get_time();
+            chara->aura_elapsed_time = current_time - chara->aura_start_time;
+            if (chara->aura_elapsed_time > chara->aura_time)
+            {
+                chara->aura = false;
+                chara->aura_start_time = al_get_time();  // 重設開始時間以開始冷卻時間追踪
+            }
+        }
+
+        // 處理技能冷卻時間
+        if (!chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
+        {
+            double current_time = al_get_time();
+            chara->aura_elapsed_time = current_time - chara->aura_start_time;
+            if (chara->aura_elapsed_time > chara->aura_cool)
+            {
+                chara->aura_usable = true;
+                chara->aura_start_time = 0;
+                chara->aura_elapsed_time = 0;
+            }
+        }
     }
     prepause_state = chara->state;
-
-    if (chara->mp >= 20 && chara->aura == false)
-    {
-        chara->mp -= 20;
-        chara->aura = true;        
-    }
 }
 
 void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
