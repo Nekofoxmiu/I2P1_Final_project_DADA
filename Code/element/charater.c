@@ -359,19 +359,17 @@ void Character_update(Elements *self)
     }
 
     // 確認技能是否處於激活狀態
-        if (chara->gif_status[SKILL]->display_index == 2)
+        if (chara->gif_status[SKILL]->display_index == 2 && chara->mp >= 20)
         {
-            if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
-            {
-                chara->mp -= 5;
-                chara->aura = true;
-                chara->aura_usable = false;
-                chara->aura_start_time = al_get_time();
-            }
+            chara->mp -= 20;
+            chara->aura = true;
+            chara->aura_usable = false;
+            chara->aura_start_time = al_get_time();
+            printf("skill activated\n");
         }
 
         // 處理技能持續時間
-        if (chara->aura && chara->aura_start_time != 0)
+        if (chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;

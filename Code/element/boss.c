@@ -132,6 +132,10 @@ Elements *New_Boss(int label, Character *target)
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
+    pDerivedObj->atk_start_time = al_get_time();
+    pDerivedObj->atk_elapsed_time = 0;
+    pDerivedObj->aura_dmg_start_time = 0;
+    pDerivedObj->aura_dmg_elapsed_time = 0;
 
     pObj->pDerivedObj = pDerivedObj;
     pObj->Draw = Boss_draw;
@@ -144,6 +148,8 @@ void Boss_update(Elements *self)
 {
     static int prepause_state = -1;
     Boss *boss = (Boss *)(self->pDerivedObj);
+    double current2 = al_get_time();
+    boss->atk_elapsed_time = current2 - boss->atk_start_time;
     if (everything_stop)
     {
         boss->state = STOP;
@@ -241,14 +247,31 @@ void Boss_update(Elements *self)
         if (boss->gif_status[ATK]->display_index == 2 && boss->new_proj == false)
         {
             // Attack_Radial(self, 10, 5, 2);
-            Attack_Normal(self, 2, 5, true);
-            boss->new_proj = true;
+            if(boss->atk_elapsed_time > 1){
+                Attack_Normal(self, 2, 5, true);
+                boss->new_proj = true;
+                boss->atk_start_time = current2;
+            }
         }
     }
     prepause_state = boss->state;
 
-    if(target->aura == true && distance <= target->aura_dis){
-        boss->blood -= 0.1;
+    double current_time = al_get_time();
+
+    if (target->aura && distance <= target->aura_dis) {
+        if (boss->aura_dmg_start_time == 0) {
+            boss->aura_dmg_start_time = current_time;
+        }
+        else{
+            boss->aura_dmg_elapsed_time = current_time - boss->aura_dmg_start_time;
+            if (boss->aura_dmg_elapsed_time > 1) {
+                boss->blood -= target->aura_dmg;
+                printf("boss blood: %f\n", boss->blood);
+                boss->aura_dmg_start_time = current_time;
+            }
+        }
+    } else {
+        boss->aura_dmg_start_time = 0;
     }
 }
 
