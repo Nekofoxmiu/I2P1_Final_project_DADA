@@ -32,7 +32,7 @@ Scene *New_GameScene(int label)
     // spawn rate
     pDerivedObj->ene_spawn_rate = 1;
     pDerivedObj->ene_spawn_acc = 0;
-    pDerivedObj->boss_spawn_rate = 0.01;
+    pDerivedObj->boss_spawn_rate = 0.05;
     pDerivedObj->boss_spawn_acc = 0;
     // spawn type proportion
     pDerivedObj->slime_proportion = 1;
@@ -97,7 +97,7 @@ void game_scene_update(Scene *self)
 
             // enhance spawn rate
             gs->ene_spawn_rate *= 1.1;
-            gs->boss_spawn_rate *= 1.005;
+            gs->boss_spawn_rate *= 1.01;
 
         // redistribute spawn type proportion
         if(gs->slime_proportion > 0.6){

@@ -49,9 +49,10 @@ typedef struct _Boss
     int anime_time; // indicate how long the animation
     Shape *hitbox;
     BossType type; // 新增的成員，用來存儲敵人的類型
-    bool nextattack;
     double aura_dmg_start_time;
     double aura_dmg_elapsed_time;
+    double atk_start_time;
+    double atk_elapsed_time;
 } Boss;
 
 Elements *New_Boss(int label, Character *target);

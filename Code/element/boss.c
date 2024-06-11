@@ -132,7 +132,8 @@ Elements *New_Boss(int label, Character *target)
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
-    pDerivedObj->nextattack = true;
+    pDerivedObj->atk_start_time = al_get_time();
+    pDerivedObj->atk_elapsed_time = 0;
     pDerivedObj->aura_dmg_start_time = 0;
     pDerivedObj->aura_dmg_elapsed_time = 0;
 
@@ -147,6 +148,8 @@ void Boss_update(Elements *self)
 {
     static int prepause_state = -1;
     Boss *boss = (Boss *)(self->pDerivedObj);
+    double current2 = al_get_time();
+    boss->atk_elapsed_time = current2 - boss->atk_start_time;
     if (everything_stop)
     {
         boss->state = STOP;
@@ -244,8 +247,11 @@ void Boss_update(Elements *self)
         if (boss->gif_status[ATK]->display_index == 2 && boss->new_proj == false)
         {
             // Attack_Radial(self, 10, 5, 2);
-            Attack_Normal(self, 2, 5, true);
-            boss->new_proj = true;
+            if(boss->atk_elapsed_time > 1){
+                Attack_Normal(self, 2, 5, true);
+                boss->new_proj = true;
+                boss->atk_start_time = current2;
+            }
         }
     }
     prepause_state = boss->state;

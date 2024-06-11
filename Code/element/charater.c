@@ -143,7 +143,6 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->aura_start_time = 0;
     pDerivedObj->aura_elapsed_time = 0;
     pDerivedObj->aura_usable = true;
-    pDerivedObj->phase = 1;
 
     // 初始化動畫成員
     pDerivedObj->state = STOP;
@@ -347,18 +346,17 @@ void Character_update(Elements *self)
     }
 
     // 確認技能是否處於激活狀態
-        if (chara->gif_status[SKILL]->display_index == 2)
+        if (chara->gif_status[SKILL]->display_index == 2 && chara->mp >= 20)
         {
             chara->mp -= 20;
             chara->aura = true;
             chara->aura_usable = false;
             chara->aura_start_time = al_get_time();
-            chara->phase = 2;
             printf("skill activated\n");
         }
 
         // 處理技能持續時間
-        if (chara->phase == 2)
+        if (chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;
@@ -369,7 +367,6 @@ void Character_update(Elements *self)
                 chara->aura_start_time = 0;  // 重設開始時間
                 chara->aura_elapsed_time = 0;
             }
-            printf("con: %lf %lf\n", chara->aura_time, chara->aura_elapsed_time);
         }
 
         // 處理技能冷卻時間
