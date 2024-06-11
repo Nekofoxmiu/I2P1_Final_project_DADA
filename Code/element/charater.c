@@ -160,7 +160,7 @@ Elements *New_Character(int label, CharacterType charaType)
     al_restore_default_mixer();
     al_attach_sample_instance_to_mixer(pDerivedObj->sample_levelup, al_get_default_mixer());
     // set the volume of instance
-    al_set_sample_instance_gain(pDerivedObj->levelup, 0.7);
+    al_set_sample_instance_gain(pDerivedObj->sample_levelup, 0.7);
 
     pObj->pDerivedObj = pDerivedObj;
     // 設定派生對象的函數
@@ -420,28 +420,28 @@ void Character_update(Elements *self)
     // 確認技能是否處於激活狀態
     if (chara->gif_status[SKILL]->display_index == 2)
     {
-        if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
+        if (chara->mp >= 20 && !chara->aura && chara->aura_usable)
         {
-            chara->mp -= 5;
+            chara->mp -= 20;
             chara->aura = true;
             chara->aura_usable = false;
             chara->aura_start_time = al_get_time();
         }
     }
 
-    // 處理技能持續時間
-    if (chara->aura && chara->aura_start_time != 0)
-    {
-        double current_time = al_get_time();
-        chara->aura_elapsed_time = current_time - chara->aura_start_time;
-        // printf("aura_elapsed_time: %f\n", chara->aura_elapsed_time);
-        if (chara->aura_elapsed_time > chara->aura_time)
+        // 處理技能持續時間
+        if (chara->aura && chara->aura_start_time != 0)
         {
-            chara->aura = false;
-            chara->aura_start_time = 0; // 重設開始時間
-            chara->aura_elapsed_time = 0;
+            double current_time = al_get_time();
+            chara->aura_elapsed_time = current_time - chara->aura_start_time;
+            //printf("aura_elapsed_time: %f\n", chara->aura_elapsed_time);
+            if (chara->aura_elapsed_time > chara->aura_time)
+            {
+                chara->aura = false;
+                chara->aura_start_time = 0;  // 重設開始時間
+                chara->aura_elapsed_time = 0;
+            }
         }
-    }
 
     // 處理技能冷卻時間
     if (!chara->aura && !chara->aura_usable && chara->aura_start_time == 0)
