@@ -96,6 +96,9 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->weapon = al_load_bitmap(configs[charaType].weapon_stop);
     pDerivedObj->weapon_attack = algif_new_gif(configs[charaType].weapon_attack, -1);
 
+    //load skill overlay
+    pDerivedObj->skill_overlay = al_load_bitmap("assets/image/skill_overlay.png");
+
     // load effective sound
     ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
@@ -341,9 +344,10 @@ void Character_update(Elements *self)
 
             _Character_update_position(self, dx, dy);
         }
+    }
 
-        // 技能激活
-        if (chara->mp >= 20 && chara->phase == 1)
+    // 確認技能是否處於激活狀態
+        if (chara->gif_status[SKILL]->display_index == 2)
         {
             chara->mp -= 20;
             chara->aura = true;
@@ -358,18 +362,23 @@ void Character_update(Elements *self)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;
+            //printf("aura_elapsed_time: %f\n", chara->aura_elapsed_time);
             if (chara->aura_elapsed_time > chara->aura_time)
             {
                 chara->aura = false;
-                chara->aura_start_time = al_get_time();  // 重設開始時間以開始冷卻時間追踪
-                chara->phase = 3;
-                printf("skill stopped\n");
+                chara->aura_start_time = 0;  // 重設開始時間
+                chara->aura_elapsed_time = 0;
             }
             printf("con: %lf %lf\n", chara->aura_time, chara->aura_elapsed_time);
         }
 
         // 處理技能冷卻時間
-        if (chara->phase == 3)
+        if (!chara->aura && !chara->aura_usable && chara->aura_start_time == 0)
+        {
+            chara->aura_start_time = al_get_time();  // 開始冷卻時間
+        }
+
+        if (!chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;
@@ -378,17 +387,36 @@ void Character_update(Elements *self)
                 chara->aura_usable = true;
                 chara->aura_start_time = 0;
                 chara->aura_elapsed_time = 0;
-                chara->phase = 1;
             }
-            printf("cool: %d\n", (int)chara->aura_elapsed_time);
         }
-    }
     prepause_state = chara->state;
 }
 
 void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Character *chara = ((Character *)(self->pDerivedObj));
+
+    if (chara->aura && chara->aura_start_time != 0)
+    {
+        // 獲取光環大小
+        float aura_size = chara->aura_dis;
+
+        // 設置半透明度並縮放貼圖
+        ALLEGRO_BITMAP *skill_overlay = chara->skill_overlay;
+        if (skill_overlay)
+        {
+            float overlay_width = al_get_bitmap_width(skill_overlay);
+            float overlay_height = al_get_bitmap_height(skill_overlay);
+
+            al_draw_tinted_scaled_bitmap(skill_overlay, 
+                                         al_map_rgba_f(1.0, 1.0, 1.0, 0.5), 
+                                         0, 0, overlay_width, overlay_height, 
+                                         chara->x + chara->width / 2 - camera_offset_x - aura_size / 2, 
+                                         chara->y + chara->height / 2 - camera_offset_y - aura_size / 2, 
+                                         aura_size, aura_size, 
+                                         0);
+        }
+    }
 
     ALLEGRO_BITMAP *char_frame = algif_get_bitmap(chara->gif_status[chara->state], al_get_time());
     if (char_frame)
@@ -413,7 +441,9 @@ void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y
     {
         al_draw_bitmap(chara->weapon, chara->weapon_x - camera_offset_x, chara->weapon_y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
+
 }
+
 
 void Character_destory(Elements *self)
 {
@@ -429,6 +459,7 @@ void Character_destory(Elements *self)
     free(Obj);
     free(self);
 }
+
 
 void Character_get_position(Elements *self, float *x, float *y)
 {
