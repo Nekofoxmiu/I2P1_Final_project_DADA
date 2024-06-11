@@ -22,7 +22,7 @@ Game *New_Game()
     game->game_update = game_update;
     game->game_draw = game_draw;
     game->game_destroy = game_destroy;
-    game->title = "Final Project 10xxxxxxx";
+    game->title = "Good Knight";
     game->display = NULL;
     game->game_init(game);
     return game;
@@ -135,7 +135,7 @@ void game_init(Game *self)
     al_register_event_source(event_queue, al_get_timer_event_source(fps));
     al_start_timer(fps);
     // initialize the icon on the display
-    ALLEGRO_BITMAP *icon = al_load_bitmap("assets/image/icon.jpg");
+    ALLEGRO_BITMAP *icon = al_load_bitmap("assets/image/icon.png");
     al_set_display_icon(self->display, icon);
     displayptr = self->display;
 }
@@ -152,6 +152,9 @@ bool game_update(Game *self)
             break;
         case 1:
             create_scene(GameScene_L);
+            break;
+        case 2:
+            create_scene(Result_L);
             break;
         case -1:
             return false;

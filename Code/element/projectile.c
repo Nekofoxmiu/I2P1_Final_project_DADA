@@ -1,4 +1,5 @@
 #include "projectile.h"
+#include "explosion.h"
 #include "../shapes/Circle.h"
 
 #define M_PI 3.14159265358979323846
@@ -11,9 +12,14 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     Elements *pObj = New_Elements(label);
     // setting derived object member
     pDerivedObj->creator = creator;
-    pDerivedObj->img = al_load_bitmap("assets/image/projectile.png");
-    pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
-    pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
+    if (creator->label == Character_L) {
+        pDerivedObj->animation = algif_new_gif("assets/image/projectile.gif", -1);
+    }
+    else {
+        pDerivedObj->animation = algif_new_gif("assets/image/projectile_enemy.gif", -1);
+    }
+    pDerivedObj->width = pDerivedObj->animation->width;
+    pDerivedObj->height = pDerivedObj->animation->height;
     pDerivedObj->damage = damage;
     pDerivedObj->x = x;
     pDerivedObj->y = y;
@@ -38,6 +44,7 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     }
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
     pObj->inter_obj[pObj->inter_len++] = Floor_L;
+    pObj->inter_obj[pObj->inter_len++] = Projectile_L;
 
     // setting derived object function
     pObj->pDerivedObj = pDerivedObj;
@@ -48,6 +55,7 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
 
     return pObj;
 }
+
 void Projectile_update(Elements *self)
 {
     if(everything_stop) return;
@@ -102,6 +110,8 @@ void Projectile_interact(Elements *self, Elements *tar)
         if (tree->hitbox->overlap(tree->hitbox, Obj->hitbox))
         {
             self->dele = true;
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
         }
     }
     else if (tar->label == Character_L)
@@ -133,6 +143,8 @@ void Projectile_interact(Elements *self, Elements *tar)
             {
                 enemy->blood -= Obj->damage - enemy->armor;
             }
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
             self->dele = true;
 
             printf("enemy blood: %f\n", enemy->blood);
@@ -151,30 +163,43 @@ void Projectile_interact(Elements *self, Elements *tar)
             {
                 boss->blood -= Obj->damage - boss->armor;
             }
+            Elements *explosion = New_Explosion(Explosion_L, Obj->x, Obj->y);
+            _Register_elements(scene, explosion);
             self->dele = true;
 
             printf("boss blood: %f\n", boss->blood);
+        }
+    }
+    else if (tar->label == Projectile_L)
+    {
+        Projectile *pro = (Projectile *)(tar->pDerivedObj);
+        if (Obj->creator->label == pro->creator->label) return;
+        if (pro->hitbox->overlap(Obj->hitbox, pro->hitbox)) {
+            tar->dele = true;
         }
     }
 }
 void Projectile_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    if (Obj->v > 0)
-    {
-        // al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, ALLEGRO_FLIP_HORIZONTAL);
-    }
-    else
-    {
-        //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
-        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
+    ALLEGRO_BITMAP *frame = algif_get_bitmap(Obj->animation, al_get_time());
+    if (frame) {
+        if (Obj->v > 0)
+        {
+            // al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_bitmap(frame, Obj->x - camera_offset_x, Obj->y - camera_offset_y, ALLEGRO_FLIP_HORIZONTAL);
+        }
+        else
+        {
+            //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+            al_draw_bitmap(frame, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
+        }
     }
 }
 void Projectile_destory(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    al_destroy_bitmap(Obj->img);
+    algif_destroy_animation(Obj->animation);
     free(Obj->hitbox);
     free(Obj);
     free(self);
@@ -214,8 +239,8 @@ void Attack_Normal(Elements *creator, int num_bullets, int speed, bool chase)
     else if (creator->label == Character_L)
     {
         Character *chara = creator->pDerivedObj;
-        startx = chara->x;
-        starty = chara->y;
+        startx = chara->weapon_x;
+        starty = chara->weapon_y;
         dx = mouse.x + camera_x - startx;
         dy = mouse.y + camera_y - starty;
         damage = chara->damage;
@@ -223,7 +248,7 @@ void Attack_Normal(Elements *creator, int num_bullets, int speed, bool chase)
 
     NormalizeV(&dx, &dy);
 
-    double spacing = 80.0;
+    double spacing = 100.0;
 
     for (int i = 0; i < num_bullets; i++)
     {

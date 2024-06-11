@@ -1,12 +1,18 @@
 default_chara_L stop assets/image/chara_stop.gif
 default_chara_L move assets/image/chara_move.gif
 default_chara_L attack assets/image/chara_attack.gif
+default_chara_L weapon_stop assets/image/weapon_stop.png
+default_chara_L weapon_attack assets/image/weapon_attack.gif
 default_chara_L blood 100
 default_chara_L armor 1
-default_chara_L damage 100
+default_chara_L damage 25
 default_chara_L speed 5
 default_chara_L mp 20
 default_chara_L xp 0
+default_chara_L aura_dis 200
+default_chara_L aura_cool 20
+default_chara_L aura_time 5
+default_chara_L aura_dmg 15
 
 
 fire_chara_L stop assets/image/chara_stop.gif

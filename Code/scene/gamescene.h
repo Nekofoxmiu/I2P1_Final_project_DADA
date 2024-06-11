@@ -34,7 +34,8 @@ typedef enum EleType
     Projectile_L,
     Wall_L,
     Drop_L,
-    Levelup_L
+    Levelup_L,
+    Explosion_L
 } EleType;
 typedef struct _GameScene
 {
@@ -49,12 +50,20 @@ typedef struct _GameScene
     double ene_spd_enhance;
     double start_time;
     double start_time_spawn;
+    double start_time_boss;
     double elapsed_time;
     double elapsed_time_spawn;
+    double elapsed_time_boss;
+
     int chara_mp_x, chara_mp_y;
     int chara_exp_x, chara_exp_y;
     double ene_spawn_rate;
     double ene_spawn_acc;
+    double boss_spawn_rate;
+    double boss_spawn_acc;
+
+    double slime_proportion;
+    double dog_proportion;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);

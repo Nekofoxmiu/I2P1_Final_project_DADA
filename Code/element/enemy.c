@@ -139,6 +139,8 @@ Elements *New_Enemy(int label, EnemyType enemyType, Character *target,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
     pDerivedObj->nextattack = true;
+    pDerivedObj->aura_dmg_start_time = 0;
+    pDerivedObj->aura_dmg_elapsed_time = 0;
 
     pObj->pDerivedObj = pDerivedObj;
     pObj->Draw = Enemy_draw;
@@ -229,6 +231,25 @@ void Enemy_update(Elements *self)
         enemy->state = STOP;
     }
     prepause_state = enemy->state;
+
+    // aura
+    double current_time = al_get_time();
+
+    if (target->aura && distance <= target->aura_dis) {
+        if (enemy->aura_dmg_start_time == 0) {
+            enemy->aura_dmg_start_time = current_time;
+        }
+        else{
+            enemy->aura_dmg_elapsed_time = current_time - enemy->aura_dmg_start_time;
+            if (enemy->aura_dmg_elapsed_time > 1) {
+                enemy->blood -= target->aura_dmg;
+                printf("enemy blood: %f\n", enemy->blood);
+                enemy->aura_dmg_start_time = current_time;
+            }
+        }
+    } else {
+        enemy->aura_dmg_start_time = 0;
+    }
 }
 
 void Enemy_draw(Elements *self, float camera_offset_x, float camera_offset_y)
