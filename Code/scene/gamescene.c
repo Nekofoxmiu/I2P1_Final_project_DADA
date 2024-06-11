@@ -44,18 +44,6 @@ Scene *New_GameScene(int label)
     pDerivedObj->chara_mp_y = 35;
     pDerivedObj->chara_exp_x = 20;
     pDerivedObj->chara_exp_y = 50;
-
-    // sound
-    pDerivedObj->song = al_load_sample("assets/sound/game.wav");
-    if (pDerivedObj->song == NULL) printf("Error");
-    al_reserve_samples(20);
-    pDerivedObj->sample_instance = al_create_sample_instance(pDerivedObj->song);
-    // Loop the song until the display closes
-    al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_LOOP);
-    al_restore_default_mixer();
-    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
-    // set the volume of instance
-    al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.7);
     
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
@@ -107,7 +95,7 @@ void game_scene_update(Scene *self)
 
             // enhance spawn rate
             gs->ene_spawn_rate *= 1.1;
-            gs->boss_spawn_rate *= 1.05;
+            gs->boss_spawn_rate *= 1.01;
 
         // redistribute spawn type proportion
         if(gs->slime_proportion > 0.6){
@@ -251,13 +239,14 @@ void game_scene_draw(Scene *self)
     char blood[20];
     char mp[20];
     char exp[20];
+    char cool[20];
     sprintf(blood, "Blood: %d / %d", (int)chara->blood, (int)chara->max_blood);
     sprintf(mp, "MP: %d / %d", (int)chara->mp, (int)chara->max_mp);
     sprintf(exp, "EXP: %d / %d", (int)chara->xp, (int)chara->levelExpNeed);
+    sprintf(cool, "SKILL: %ds / %ds", (int)chara->aura_cool - (int)chara->aura_elapsed_time, (int)chara->aura_cool);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
-    al_play_sample_instance(gs->sample_instance);
 }
 void game_scene_destroy(Scene *self)
 {
