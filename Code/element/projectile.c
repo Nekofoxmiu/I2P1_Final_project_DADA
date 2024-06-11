@@ -231,7 +231,7 @@ void Attack_Normal(Elements *creator, int num_bullets, int speed, bool chase)
 
     NormalizeV(&dx, &dy);
 
-    double spacing = 80.0;
+    double spacing = 100.0;
 
     for (int i = 0; i < num_bullets; i++)
     {

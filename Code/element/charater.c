@@ -123,6 +123,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->max_mp = configs[charaType].mp;
     pDerivedObj->mp = configs[charaType].mp;
     pDerivedObj->xp = configs[charaType].xp;
+    pDerivedObj->bullet_num = 1;
 
     // 初始化動畫成員
     pDerivedObj->state = STOP;
@@ -278,7 +279,7 @@ void Character_update(Elements *self)
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
-            Attack_Normal(self, 1, 10, false);
+            Attack_Normal(self, chara->bullet_num, 10, false);
             chara->new_proj = true;
         }
     }
