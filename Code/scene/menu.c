@@ -13,15 +13,28 @@ Scene *New_Menu(int label)
     pDerivedObj->font_small = al_load_ttf_font("assets/font/pixel_font.ttf", 40, 0);
     pDerivedObj->background = al_load_bitmap("assets/image/menu/background.jpg");
     // Load sound
-    pDerivedObj->song = al_load_sample("assets/sound/menu.wav");
+    pDerivedObj->song_background = al_load_sample("assets/sound/menu.wav");
+    if (pDerivedObj->song_background == NULL) printf("Error");
     al_reserve_samples(20);
-    pDerivedObj->sample_instance = al_create_sample_instance(pDerivedObj->song);
-    // Loop the song until the display closes
-    al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_LOOP);
+    pDerivedObj->sample_instance_background = al_create_sample_instance(pDerivedObj->song_background);
+    // Loop the song_background until the display closes
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance_background, ALLEGRO_PLAYMODE_LOOP);
     al_restore_default_mixer();
-    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance_background, al_get_default_mixer());
     // set the volume of instance
-    al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.5);
+    al_set_sample_instance_gain(pDerivedObj->sample_instance_background, 1);
+
+    // Load sound
+    pDerivedObj->song_enter = al_load_sample("assets/sound/enter.wav");
+    if (pDerivedObj->song_enter == NULL) printf("Error");
+    al_reserve_samples(20);
+    pDerivedObj->sample_instance_enter = al_create_sample_instance(pDerivedObj->song_enter);
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance_enter, ALLEGRO_PLAYMODE_ONCE);
+    al_restore_default_mixer();
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance_enter, al_get_default_mixer());
+    // set the volume of instance
+    al_set_sample_instance_gain(pDerivedObj->sample_instance_enter, 1);
+    
     // title
     pDerivedObj->title_x = WIDTH / 2;
     pDerivedObj->title_y = HEIGHT / 6;
@@ -38,8 +51,10 @@ Scene *New_Menu(int label)
 }
 void menu_update(Scene *self)
 {
+    Menu *Obj = ((Menu *)(self->pDerivedObj));
     if (key_state[ALLEGRO_KEY_ENTER])
     {
+        al_play_sample_instance(Obj->sample_instance_enter);
         self->scene_end = true;
         window = 1;
     }
@@ -69,7 +84,7 @@ void menu_draw(Scene *self)
     
     al_draw_text(Obj->font_large, al_map_rgb(255, 255, 255), Obj->title_x, Obj->title_y, ALLEGRO_ALIGN_CENTRE, "G o o d  K n i g h t");
     al_draw_text(Obj->font_small, al_map_rgb(255, 255, 255),  14.5 * PIXEL_SIZE, HEIGHT / 1.2, ALLEGRO_ALIGN_CENTRE, "Press Enter to Start");
-    al_play_sample_instance(Obj->sample_instance);
+    al_play_sample_instance(Obj->sample_instance_background);
 }
 void menu_destroy(Scene *self)
 {
@@ -80,8 +95,8 @@ void menu_destroy(Scene *self)
     algif_destroy_animation(Obj->charactor);
     al_destroy_font(Obj->font_large);
     al_destroy_font(Obj->font_small);
-    al_destroy_sample(Obj->song);
-    al_destroy_sample_instance(Obj->sample_instance);
+    al_destroy_sample(Obj->song_background);
+    al_destroy_sample_instance(Obj->sample_instance_background);
     free(Obj);
     free(self);
 }
