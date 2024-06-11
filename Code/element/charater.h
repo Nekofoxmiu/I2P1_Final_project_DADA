@@ -38,6 +38,10 @@ typedef struct _CharacterConfig
     double speed;
     double mp;
     double xp;
+    double aura_dis;
+    double aura_cool;
+    double aura_time;
+    double aura_dmg;
 } CharacterConfig;
 
 typedef struct _Character
@@ -69,6 +73,13 @@ typedef struct _Character
     int level;
     CharacterType type;
     bool aura;
+    double aura_dis;
+    double aura_cool;
+    double aura_start_time;
+    double aura_elapsed_time;
+    bool aura_usable;
+    double aura_time;
+    double aura_dmg;
 } Character;
 
 Elements *New_Character(int label, CharacterType charaType);

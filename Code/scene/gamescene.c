@@ -30,9 +30,9 @@ Scene *New_GameScene(int label)
     pDerivedObj->elapsed_time_spawn = 0;
     pDerivedObj->elapsed_time_boss = 0;
     // spawn rate
-    pDerivedObj->ene_spawn_rate = 0.5;
+    pDerivedObj->ene_spawn_rate = 1;
     pDerivedObj->ene_spawn_acc = 0;
-    pDerivedObj->boss_spawn_rate = 0.01;
+    pDerivedObj->boss_spawn_rate = 0.05;
     pDerivedObj->boss_spawn_acc = 0;
     // spawn type proportion
     pDerivedObj->slime_proportion = 1;
