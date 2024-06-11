@@ -109,8 +109,8 @@ Elements *New_Character(int label, CharacterType charaType)
     // 初始化角色的其他成員
     pDerivedObj->width = pDerivedObj->gif_status[0]->width;
     pDerivedObj->height = pDerivedObj->gif_status[0]->height;
-    pDerivedObj->x = WIDTH / 2 - pDerivedObj->width / 2;
-    pDerivedObj->y = HEIGHT / 2 - pDerivedObj->height / 2;
+    pDerivedObj->x = 1300;
+    pDerivedObj->y = HEIGHT + 800;
     pDerivedObj->weapon_x = pDerivedObj->x;
     pDerivedObj->weapon_y = pDerivedObj->y;
     pDerivedObj->level = 0;
