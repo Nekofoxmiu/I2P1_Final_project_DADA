@@ -12,7 +12,12 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     Elements *pObj = New_Elements(label);
     // setting derived object member
     pDerivedObj->creator = creator;
-    pDerivedObj->animation = algif_new_gif("assets/image/projectile.gif", -1);
+    if (creator->label == Character_L) {
+        pDerivedObj->animation = algif_new_gif("assets/image/projectile.gif", -1);
+    }
+    else {
+        pDerivedObj->animation = algif_new_gif("assets/image/projectile_enemy.gif", -1);
+    }
     pDerivedObj->width = pDerivedObj->animation->width;
     pDerivedObj->height = pDerivedObj->animation->height;
     pDerivedObj->damage = damage;
@@ -39,6 +44,7 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     }
     pObj->inter_obj[pObj->inter_len++] = Tree_L;
     pObj->inter_obj[pObj->inter_len++] = Floor_L;
+    pObj->inter_obj[pObj->inter_len++] = Projectile_L;
 
     // setting derived object function
     pObj->pDerivedObj = pDerivedObj;
@@ -162,6 +168,14 @@ void Projectile_interact(Elements *self, Elements *tar)
             self->dele = true;
 
             printf("boss blood: %f\n", boss->blood);
+        }
+    }
+    else if (tar->label == Projectile_L)
+    {
+        Projectile *pro = (Projectile *)(tar->pDerivedObj);
+        if (Obj->creator->label == pro->creator->label) return;
+        if (pro->hitbox->overlap(Obj->hitbox, pro->hitbox)) {
+            tar->dele = true;
         }
     }
 }
