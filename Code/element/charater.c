@@ -91,12 +91,13 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->gif_status[MOVE] = algif_new_gif(configs[charaType].move, -1);
     pDerivedObj->gif_status[ATK] = algif_new_gif(configs[charaType].attack, -1);
     pDerivedObj->gif_status[SKILL] = algif_new_gif(configs[charaType].attack, -1);
+    pDerivedObj->gif_status[RADIAL_ATTACK] = algif_new_gif(configs[charaType].attack, -1);
 
     // load weapon
     pDerivedObj->weapon = al_load_bitmap(configs[charaType].weapon_stop);
     pDerivedObj->weapon_attack = algif_new_gif(configs[charaType].weapon_attack, -1);
 
-    //load skill overlay
+    // load skill overlay
     pDerivedObj->skill_overlay = al_load_bitmap("assets/image/skill_overlay.png");
 
     // load effective sound
@@ -123,7 +124,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->aura = false;
 
     // setting the interact object
-    //pObj->inter_obj[pObj->inter_len++] = Tree_L;
+    // pObj->inter_obj[pObj->inter_len++] = Tree_L;
 
     // 根據配置文件初始化屬性
     pDerivedObj->max_blood = configs[charaType].blood;
@@ -135,6 +136,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->mp = configs[charaType].mp;
     pDerivedObj->xp = configs[charaType].xp;
     pDerivedObj->bullet_num = 1;
+    pDerivedObj->radial_bullet_num = 10;
     pDerivedObj->aura_dis = configs[charaType].aura_dis;
     pDerivedObj->aura_cool = configs[charaType].aura_cool;
     pDerivedObj->aura_time = configs[charaType].aura_time;
@@ -157,7 +159,6 @@ Elements *New_Character(int label, CharacterType charaType)
     pObj->GetPosition = Character_get_position;
     return pObj;
 }
-
 
 void Character_update(Elements *self)
 {
@@ -205,9 +206,13 @@ void Character_update(Elements *self)
         {
             chara->state = MOVE;
         }
-        else if ((mouse_state[2] || mouse_state[3])  && chara->aura_usable)
+        else if ((mouse_state[2] || mouse_state[3]) && chara->aura_usable)
         {
             chara->state = SKILL;
+        }
+        else if (key_state[ALLEGRO_KEY_SPACE])
+        {
+            chara->state = RADIAL_ATTACK;
         }
     }
     else if (chara->state == MOVE)
@@ -219,6 +224,10 @@ void Character_update(Elements *self)
         else if ((mouse_state[2] || mouse_state[3]) && chara->aura_usable)
         {
             chara->state = SKILL;
+        }
+        else if (key_state[ALLEGRO_KEY_SPACE])
+        {
+            chara->state = RADIAL_ATTACK;
         }
         else
         {
@@ -296,7 +305,7 @@ void Character_update(Elements *self)
 
             _Character_update_position(self, dx, dy);
         }
-        
+
         // GIF 速度調快的時候偵測的 Index 要像後調或去掉這個條件
         if (chara->gif_status[ATK]->display_index == 2 && chara->new_proj == false)
         {
@@ -344,50 +353,101 @@ void Character_update(Elements *self)
             _Character_update_position(self, dx, dy);
         }
     }
+    else if (chara->state == RADIAL_ATTACK)
+    {
+        if (chara->gif_status[chara->state]->done)
+        {
+            chara->state = STOP;
+            chara->new_proj = false;
+        }
+        else
+        {
+            int dx = 0, dy = 0;
+            if (key_state[ALLEGRO_KEY_A])
+            {
+                chara->dir = 'L';
+                dx -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_D])
+            {
+                chara->dir = 'R';
+                dx += 1;
+            }
+            if (key_state[ALLEGRO_KEY_W])
+            {
+                dy -= 1;
+            }
+            if (key_state[ALLEGRO_KEY_S])
+            {
+                dy += 1;
+            }
+
+            // 計算單位移動向量並乘以固定速度
+            float length = sqrt(dx * dx + dy * dy);
+            if (length != 0)
+            {
+                dx = (int)(dx / length * speed);
+                dy = (int)(dy / length * speed);
+            }
+
+            _Character_update_position(self, dx, dy);
+
+            if (chara->gif_status[RADIAL_ATTACK]->display_index == 2 && chara->new_proj == false)
+            {
+                if(chara->mp >= 1)
+                {
+                    chara->mp -= 1;
+                    Attack_Radial(self, chara->radial_bullet_num, 5, 1);
+                    chara->new_proj = true;
+                }
+            }
+        }
+    }
 
     // 確認技能是否處於激活狀態
-        if (chara->gif_status[SKILL]->display_index == 2)
+    if (chara->gif_status[SKILL]->display_index == 2)
+    {
+        if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
         {
-            if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
-            {
-                chara->mp -= 5;
-                chara->aura = true;
-                chara->aura_usable = false;
-                chara->aura_start_time = al_get_time();
-            }
+            chara->mp -= 5;
+            chara->aura = true;
+            chara->aura_usable = false;
+            chara->aura_start_time = al_get_time();
         }
+    }
 
-        // 處理技能持續時間
-        if (chara->aura && chara->aura_start_time != 0)
+    // 處理技能持續時間
+    if (chara->aura && chara->aura_start_time != 0)
+    {
+        double current_time = al_get_time();
+        chara->aura_elapsed_time = current_time - chara->aura_start_time;
+        // printf("aura_elapsed_time: %f\n", chara->aura_elapsed_time);
+        if (chara->aura_elapsed_time > chara->aura_time)
         {
-            double current_time = al_get_time();
-            chara->aura_elapsed_time = current_time - chara->aura_start_time;
-            //printf("aura_elapsed_time: %f\n", chara->aura_elapsed_time);
-            if (chara->aura_elapsed_time > chara->aura_time)
-            {
-                chara->aura = false;
-                chara->aura_start_time = 0;  // 重設開始時間
-                chara->aura_elapsed_time = 0;
-            }
+            chara->aura = false;
+            chara->aura_start_time = 0; // 重設開始時間
+            chara->aura_elapsed_time = 0;
         }
+    }
 
-        // 處理技能冷卻時間
-        if (!chara->aura && !chara->aura_usable && chara->aura_start_time == 0)
-        {
-            chara->aura_start_time = al_get_time();  // 開始冷卻時間
-        }
+    // 處理技能冷卻時間
+    if (!chara->aura && !chara->aura_usable && chara->aura_start_time == 0)
+    {
+        chara->aura_start_time = al_get_time(); // 開始冷卻時間
+    }
 
-        if (!chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
+    if (!chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
+    {
+        double current_time = al_get_time();
+        chara->aura_elapsed_time = current_time - chara->aura_start_time;
+        if (chara->aura_elapsed_time > chara->aura_cool)
         {
-            double current_time = al_get_time();
-            chara->aura_elapsed_time = current_time - chara->aura_start_time;
-            if (chara->aura_elapsed_time > chara->aura_cool)
-            {
-                chara->aura_usable = true;
-                chara->aura_start_time = 0;
-                chara->aura_elapsed_time = 0;
-            }
+            chara->aura_usable = true;
+            chara->aura_start_time = 0;
+            chara->aura_elapsed_time = 0;
         }
+    }
+
     prepause_state = chara->state;
 }
 
@@ -407,12 +467,12 @@ void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y
             float overlay_width = al_get_bitmap_width(skill_overlay);
             float overlay_height = al_get_bitmap_height(skill_overlay);
 
-            al_draw_tinted_scaled_bitmap(skill_overlay, 
-                                         al_map_rgba_f(1.0, 1.0, 1.0, 0.5), 
-                                         0, 0, overlay_width, overlay_height, 
-                                         chara->x + chara->width / 2 - camera_offset_x - aura_size / 2, 
-                                         chara->y + chara->height / 2 - camera_offset_y - aura_size / 2, 
-                                         aura_size, aura_size, 
+            al_draw_tinted_scaled_bitmap(skill_overlay,
+                                         al_map_rgba_f(1.0, 1.0, 1.0, 0.5),
+                                         0, 0, overlay_width, overlay_height,
+                                         chara->x + chara->width / 2 - camera_offset_x - aura_size / 2,
+                                         chara->y + chara->height / 2 - camera_offset_y - aura_size / 2,
+                                         aura_size, aura_size,
                                          0);
         }
     }
@@ -440,9 +500,7 @@ void Character_draw(Elements *self, float camera_offset_x, float camera_offset_y
     {
         al_draw_bitmap(chara->weapon, chara->weapon_x - camera_offset_x, chara->weapon_y - camera_offset_y, ((chara->dir == 'R') ? ALLEGRO_FLIP_HORIZONTAL : 0));
     }
-
 }
-
 
 void Character_destory(Elements *self)
 {
@@ -459,7 +517,6 @@ void Character_destory(Elements *self)
     free(self);
 }
 
-
 void Character_get_position(Elements *self, float *x, float *y)
 {
     Character *chara = (Character *)(self->pDerivedObj);
@@ -475,10 +532,12 @@ void _Character_update_position(Elements *self, int dx, int dy)
     Shape *hitbox = chara->hitbox;
     hitbox->update_center_x(hitbox, dx);
     hitbox->update_center_y(hitbox, dy);
-    if (chara->dir == 'L') {
+    if (chara->dir == 'L')
+    {
         chara->weapon_x = chara->x - 10;
     }
-    else {
+    else
+    {
         chara->weapon_x = chara->x + 40;
     }
     chara->weapon_y = chara->y + 15;
