@@ -17,7 +17,7 @@ typedef struct _Projectile
     double vdx, vdy; // projectile velocity unit vector
     bool chase;
     double damage;
-    ALLEGRO_BITMAP *img;
+    ALGIF_ANIMATION *animation;
     Shape *hitbox; // the hitbox of object
 } Projectile;
 

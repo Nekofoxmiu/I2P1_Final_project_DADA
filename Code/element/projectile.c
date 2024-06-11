@@ -12,9 +12,9 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
     Elements *pObj = New_Elements(label);
     // setting derived object member
     pDerivedObj->creator = creator;
-    pDerivedObj->img = al_load_bitmap("assets/image/projectile.png");
-    pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
-    pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
+    pDerivedObj->animation = algif_new_gif("assets/image/projectile.gif", -1);
+    pDerivedObj->width = pDerivedObj->animation->width;
+    pDerivedObj->height = pDerivedObj->animation->height;
     pDerivedObj->damage = damage;
     pDerivedObj->x = x;
     pDerivedObj->y = y;
@@ -168,21 +168,24 @@ void Projectile_interact(Elements *self, Elements *tar)
 void Projectile_draw(Elements *self, float camera_offset_x, float camera_offset_y)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    if (Obj->v > 0)
-    {
-        // al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
-        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, ALLEGRO_FLIP_HORIZONTAL);
-    }
-    else
-    {
-        //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
-        al_draw_bitmap(Obj->img, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
+    ALLEGRO_BITMAP *frame = algif_get_bitmap(Obj->animation, al_get_time());
+    if (frame) {
+        if (Obj->v > 0)
+        {
+            // al_draw_bitmap(Obj->img, Obj->x, Obj->y, ALLEGRO_FLIP_HORIZONTAL);
+            al_draw_bitmap(frame, Obj->x - camera_offset_x, Obj->y - camera_offset_y, ALLEGRO_FLIP_HORIZONTAL);
+        }
+        else
+        {
+            //al_draw_bitmap(Obj->img, Obj->x, Obj->y, 0);
+            al_draw_bitmap(frame, Obj->x - camera_offset_x, Obj->y - camera_offset_y, 0);
+        }
     }
 }
 void Projectile_destory(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
-    al_destroy_bitmap(Obj->img);
+    algif_destroy_animation(Obj->animation);
     free(Obj->hitbox);
     free(Obj);
     free(self);
