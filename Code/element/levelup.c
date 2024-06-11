@@ -10,9 +10,12 @@ const char *descriptions[] = {
     "Speed +20%",
     "MAX MP +20%",
     "Bullet +1",
-    "Poison ATK +20%"};
+    "RAIDAL Bullet +1",
+    "Poison ATK +20%",
+    "Poison Range +20%",
+    "Poison Time +20%"};
 
-ALLEGRO_BITMAP *icons[7];
+ALLEGRO_BITMAP *icons[10];
 
 void load_icons()
 {
@@ -46,8 +49,23 @@ void load_icons()
     {
         printf("Failed to load bullet.png\n");
     }
-    icons[6] = al_load_bitmap("assets/image/upgrade/icon/poison.png");
+    icons[6] = al_load_bitmap("assets/image/upgrade/icon/bullet.png");
     if (!icons[6])
+    {
+        printf("Failed to load bullet.png\n");
+    }
+    icons[7] = al_load_bitmap("assets/image/upgrade/icon/poison.png");
+    if (!icons[7])
+    {
+        printf("Failed to load poison.png\n");
+    }
+    icons[8] = al_load_bitmap("assets/image/upgrade/icon/poison.png");
+    if (!icons[8])
+    {
+        printf("Failed to load poison.png\n");
+    }
+    icons[9] = al_load_bitmap("assets/image/upgrade/icon/poison.png");
+    if (!icons[9])
     {
         printf("Failed to load poison.png\n");
     }
@@ -82,7 +100,7 @@ Elements *New_Levelup(int label, Character *player)
     // Initialize enhancements (randomly select 3 enhancements)
     for (int i = 0; i < 3; i++)
     {
-        int randIndex = rand() % 7;
+        int randIndex = rand() % 10;
         pDerivedObj->enhancements[i].description = descriptions[randIndex];
         pDerivedObj->enhancements[i].icon = icons[randIndex];
         pDerivedObj->enhancements[i].width = al_get_bitmap_width(icons[randIndex]);
@@ -157,9 +175,21 @@ void Levelup_handle_mouse_click(Levelup *Obj, Elements *self, int mouse_x, int m
             {
                 Obj->player->bullet_num += 1;
             }
+            else if (strcmp(Obj->enhancements[i].description, "RAIDAL Bullet +1") == 0)
+            {
+                Obj->player->radial_bullet_num += 1;
+            }
             else if (strcmp(Obj->enhancements[i].description, "Poison ATK +20%") == 0)
             {
                 Obj->player->poison_damage += Obj->player->poison_damage * 0.2;
+            }
+            else if (strcmp(Obj->enhancements[i].description, "Poison Range +20%") == 0)
+            {
+                Obj->player->aura_dis += Obj->player->aura_dis * 0.2;
+            }
+            else if (strcmp(Obj->enhancements[i].description, "Poison Time +20%") == 0)
+            {
+                Obj->player->aura_time += Obj->player->aura_time * 0.2;
             }
             everything_stop = false;
             al_set_system_mouse_cursor(displayptr, ALLEGRO_SYSTEM_MOUSE_CURSOR_DEFAULT);
@@ -220,7 +250,7 @@ void Levelup_destory(Elements *self)
     al_destroy_bitmap(Obj->background);
     al_destroy_sample(Obj->song);
     al_destroy_sample_instance(Obj->sample_instance);
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 10; i++)
     {
         al_destroy_bitmap(icons[i]);
     }
