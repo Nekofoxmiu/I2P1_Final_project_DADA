@@ -64,6 +64,9 @@ typedef struct _GameScene
 
     double slime_proportion;
     double dog_proportion;
+
+    ALLEGRO_SAMPLE *song;
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance;
 } GameScene;
 Scene *New_GameScene(int label);
 void game_scene_update(Scene *self);

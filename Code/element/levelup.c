@@ -240,6 +240,8 @@ void Levelup_destory(Elements *self)
 {
     Levelup *Obj = ((Levelup *)(self->pDerivedObj));
     al_destroy_bitmap(Obj->background);
+    al_destroy_sample(Obj->song);
+    al_destroy_sample_instance(Obj->sample_instance);
     for (int i = 0; i < 10; i++)
     {
         al_destroy_bitmap(icons[i]);

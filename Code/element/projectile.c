@@ -32,6 +32,13 @@ Elements *New_Projectile(Elements *creator, int label, double damage, double x, 
                                      pDerivedObj->y + pDerivedObj->height / 2,
                                      min(pDerivedObj->width, pDerivedObj->height) / 2);
 
+    
+    // load effective sound
+    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/enemy_atk.wav");
+    pDerivedObj->sample_instance = al_create_sample_instance(sample);
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
+    
     // setting the interact object
     if (creator->label == Character_L)
     {
@@ -119,6 +126,7 @@ void Projectile_interact(Elements *self, Elements *tar)
         Character *character = ((Character *)(tar->pDerivedObj));
         if (character->hitbox->overlap(character->hitbox, Obj->hitbox))
         {
+            al_play_sample_instance(Obj->sample_instance);
             if (character->armor > Obj->damage)
             {
                 character->blood -= 1;
@@ -200,6 +208,7 @@ void Projectile_destory(Elements *self)
 {
     Projectile *Obj = ((Projectile *)(self->pDerivedObj));
     algif_destroy_animation(Obj->animation);
+    al_destroy_sample_instance(Obj->sample_instance);
     free(Obj->hitbox);
     free(Obj);
     free(self);

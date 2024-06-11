@@ -44,6 +44,18 @@ Scene *New_GameScene(int label)
     pDerivedObj->chara_mp_y = 35;
     pDerivedObj->chara_exp_x = 20;
     pDerivedObj->chara_exp_y = 50;
+
+    // sound
+    pDerivedObj->song = al_load_sample("assets/sound/game.wav");
+    if (pDerivedObj->song == NULL) printf("Error");
+    al_reserve_samples(20);
+    pDerivedObj->sample_instance = al_create_sample_instance(pDerivedObj->song);
+    // Loop the song until the display closes
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_LOOP);
+    al_restore_default_mixer();
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
+    // set the volume of instance
+    al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.7);
     
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
@@ -245,6 +257,7 @@ void game_scene_draw(Scene *self)
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
+    al_play_sample_instance(gs->sample_instance);
 }
 void game_scene_destroy(Scene *self)
 {
@@ -257,6 +270,8 @@ void game_scene_destroy(Scene *self)
         Elements *ele = allEle.arr[i];
         ele->Destroy(ele);
     }
+    al_destroy_sample(Obj->song);
+    al_destroy_sample_instance(Obj->sample_instance);
     free(Obj);
     free(self);
 }

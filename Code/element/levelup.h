@@ -23,6 +23,8 @@ typedef struct _Levelup {
     ALLEGRO_FONT *font;
     Enhancement enhancements[3]; // the three enhancements to display
     bool mouse_button_pressed;
+    ALLEGRO_SAMPLE *song;
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance;
 } Levelup;
 
 
