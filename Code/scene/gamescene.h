@@ -57,6 +57,7 @@ typedef struct _GameScene
 
     int chara_mp_x, chara_mp_y;
     int chara_exp_x, chara_exp_y;
+    int chara_cool_x, chara_cool_y;
     double ene_spawn_rate;
     double ene_spawn_acc;
     double boss_spawn_rate;

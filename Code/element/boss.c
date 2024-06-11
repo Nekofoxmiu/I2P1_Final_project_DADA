@@ -132,6 +132,9 @@ Elements *New_Boss(int label, Character *target)
     pDerivedObj->hitbox = New_Rectangle(pDerivedObj->x, pDerivedObj->y,
                                         pDerivedObj->x + pDerivedObj->width,
                                         pDerivedObj->y + pDerivedObj->height);
+    pDerivedObj->nextattack = true;
+    pDerivedObj->aura_dmg_start_time = 0;
+    pDerivedObj->aura_dmg_elapsed_time = 0;
 
     pObj->pDerivedObj = pDerivedObj;
     pObj->Draw = Boss_draw;
@@ -247,8 +250,22 @@ void Boss_update(Elements *self)
     }
     prepause_state = boss->state;
 
-    if(target->aura == true && distance <= target->aura_dis){
-        boss->blood -= 0.1;
+    double current_time = al_get_time();
+
+    if (target->aura && distance <= target->aura_dis) {
+        if (boss->aura_dmg_start_time == 0) {
+            boss->aura_dmg_start_time = current_time;
+        }
+        else{
+            boss->aura_dmg_elapsed_time = current_time - boss->aura_dmg_start_time;
+            if (boss->aura_dmg_elapsed_time > 1) {
+                boss->blood -= target->aura_dmg;
+                printf("boss blood: %f\n", boss->blood);
+                boss->aura_dmg_start_time = current_time;
+            }
+        }
+    } else {
+        boss->aura_dmg_start_time = 0;
     }
 }
 

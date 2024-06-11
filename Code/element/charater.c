@@ -140,6 +140,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->aura_start_time = 0;
     pDerivedObj->aura_elapsed_time = 0;
     pDerivedObj->aura_usable = true;
+    pDerivedObj->phase = 1;
 
     // 初始化動畫成員
     pDerivedObj->state = STOP;
@@ -341,20 +342,19 @@ void Character_update(Elements *self)
             _Character_update_position(self, dx, dy);
         }
 
-        // 確認技能是否處於激活狀態
-        if (chara->gif_status[SKILL]->display_index == 2)
+        // 技能激活
+        if (chara->mp >= 20 && chara->phase == 1)
         {
-            if (chara->mp >= 5 && !chara->aura && chara->aura_usable)
-            {
-                chara->mp -= 5;
-                chara->aura = true;
-                chara->aura_usable = false;
-                chara->aura_start_time = al_get_time();
-            }
+            chara->mp -= 20;
+            chara->aura = true;
+            chara->aura_usable = false;
+            chara->aura_start_time = al_get_time();
+            chara->phase = 2;
+            printf("skill activated\n");
         }
 
         // 處理技能持續時間
-        if (chara->aura && chara->aura_start_time != 0)
+        if (chara->phase == 2)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;
@@ -362,11 +362,14 @@ void Character_update(Elements *self)
             {
                 chara->aura = false;
                 chara->aura_start_time = al_get_time();  // 重設開始時間以開始冷卻時間追踪
+                chara->phase = 3;
+                printf("skill stopped\n");
             }
+            printf("con: %lf %lf\n", chara->aura_time, chara->aura_elapsed_time);
         }
 
         // 處理技能冷卻時間
-        if (!chara->aura && !chara->aura_usable && chara->aura_start_time != 0)
+        if (chara->phase == 3)
         {
             double current_time = al_get_time();
             chara->aura_elapsed_time = current_time - chara->aura_start_time;
@@ -375,7 +378,9 @@ void Character_update(Elements *self)
                 chara->aura_usable = true;
                 chara->aura_start_time = 0;
                 chara->aura_elapsed_time = 0;
+                chara->phase = 1;
             }
+            printf("cool: %d\n", (int)chara->aura_elapsed_time);
         }
     }
     prepause_state = chara->state;

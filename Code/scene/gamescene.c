@@ -32,7 +32,7 @@ Scene *New_GameScene(int label)
     // spawn rate
     pDerivedObj->ene_spawn_rate = 1;
     pDerivedObj->ene_spawn_acc = 0;
-    pDerivedObj->boss_spawn_rate = 0.05;
+    pDerivedObj->boss_spawn_rate = 0.01;
     pDerivedObj->boss_spawn_acc = 0;
     // spawn type proportion
     pDerivedObj->slime_proportion = 1;
@@ -44,6 +44,8 @@ Scene *New_GameScene(int label)
     pDerivedObj->chara_mp_y = 35;
     pDerivedObj->chara_exp_x = 20;
     pDerivedObj->chara_exp_y = 50;
+    pDerivedObj->chara_cool_x = 20;
+    pDerivedObj->chara_cool_y = 65;
     
     // register element
     _Register_elements(pObj, New_Floor(Floor_L));
@@ -95,7 +97,7 @@ void game_scene_update(Scene *self)
 
             // enhance spawn rate
             gs->ene_spawn_rate *= 1.1;
-            gs->boss_spawn_rate *= 1.05;
+            gs->boss_spawn_rate *= 1.005;
 
         // redistribute spawn type proportion
         if(gs->slime_proportion > 0.6){
@@ -239,12 +241,15 @@ void game_scene_draw(Scene *self)
     char blood[20];
     char mp[20];
     char exp[20];
+    char cool[20];
     sprintf(blood, "Blood: %d / %d", (int)chara->blood, (int)chara->max_blood);
     sprintf(mp, "MP: %d / %d", (int)chara->mp, (int)chara->max_mp);
     sprintf(exp, "EXP: %d / %d", (int)chara->xp, (int)chara->levelExpNeed);
+    sprintf(cool, "SKILL: %ds / %ds", (int)chara->aura_cool - (int)chara->aura_elapsed_time, (int)chara->aura_cool);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_blood_x, gs->chara_blood_y, ALLEGRO_ALIGN_LEFT, blood);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_mp_x, gs->chara_mp_y + FONT_SIZE, ALLEGRO_ALIGN_LEFT, mp);
     al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_exp_x, gs->chara_exp_y + FONT_SIZE * 2, ALLEGRO_ALIGN_LEFT, exp);
+    al_draw_text(gs->font, al_map_rgb(255, 255, 255), gs->chara_cool_x, gs->chara_cool_y + FONT_SIZE * 3, ALLEGRO_ALIGN_LEFT, cool);
 }
 void game_scene_destroy(Scene *self)
 {

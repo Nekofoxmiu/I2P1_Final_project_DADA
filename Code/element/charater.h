@@ -84,6 +84,7 @@ typedef struct _Character
     bool aura_usable;
     double aura_time;
     double aura_dmg;
+    int phase;
 } Character;
 
 Elements *New_Character(int label, CharacterType charaType);
