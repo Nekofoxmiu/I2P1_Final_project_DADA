@@ -18,7 +18,9 @@ typedef struct _Result
     ALGIF_ANIMATION *torch;
     ALGIF_ANIMATION *charactor;
     ALLEGRO_SAMPLE *song;
+    ALLEGRO_SAMPLE *song_enter;
     ALLEGRO_SAMPLE_INSTANCE *sample_instance;
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance_enter;
     int title_x, title_y;
 } Result;
 Scene *New_Result(int label);

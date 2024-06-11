@@ -22,6 +22,18 @@ Scene *New_Result(int label)
     al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
     // set the volume of instance
     al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.5);
+
+    // Load sound
+    pDerivedObj->song_enter = al_load_sample("assets/sound/enter.wav");
+    if (pDerivedObj->song_enter == NULL) printf("Error");
+    al_reserve_samples(20);
+    pDerivedObj->sample_instance_enter = al_create_sample_instance(pDerivedObj->song_enter);
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance_enter, ALLEGRO_PLAYMODE_ONCE);
+    al_restore_default_mixer();
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance_enter, al_get_default_mixer());
+    // set the volume of instance
+    al_set_sample_instance_gain(pDerivedObj->sample_instance_enter, 1);
+
     // title
     pDerivedObj->title_x = WIDTH / 2;
     pDerivedObj->title_y = HEIGHT / 6;
@@ -40,6 +52,8 @@ void result_update(Scene *self)
 {
     if (key_state[ALLEGRO_KEY_ENTER])
     {
+        Result *Obj = ((Result *)(self->pDerivedObj));
+        al_play_sample_instance(Obj->sample_instance_enter);
         self->scene_end = true;
         window = 1;
     }
@@ -85,6 +99,8 @@ void result_destroy(Scene *self)
     al_destroy_font(Obj->font_small);
     al_destroy_sample(Obj->song);
     al_destroy_sample_instance(Obj->sample_instance);
+    al_destroy_sample(Obj->song_enter);
+    al_destroy_sample_instance(Obj->sample_instance_enter);
     free(Obj);
     free(self);
 }

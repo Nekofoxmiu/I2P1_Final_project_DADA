@@ -84,6 +84,9 @@ typedef struct _Character
     bool aura_usable;
     double aura_time;
     double aura_dmg;
+
+    ALLEGRO_SAMPLE *levelup;
+    ALLEGRO_SAMPLE_INSTANCE *sample_levelup;
 } Character;
 
 Elements *New_Character(int label, CharacterType charaType);

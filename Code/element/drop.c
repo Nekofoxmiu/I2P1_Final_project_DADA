@@ -23,10 +23,11 @@ Elements *New_Drop(int label, DropType type, Character *target, int x, int y, do
     }
 
     // load effective sound
-    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
+    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/drop.wav");
     pDerivedObj->pick_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(pDerivedObj->pick_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->pick_Sound, al_get_default_mixer());
+    al_set_sample_instance_gain(pDerivedObj->pick_Sound, 0.4);
 
     pDerivedObj->width = al_get_bitmap_width(pDerivedObj->img);
     pDerivedObj->height = al_get_bitmap_height(pDerivedObj->img);
@@ -123,6 +124,7 @@ void Drop_destory(Elements *self)
 {
     Drop *Obj = ((Drop *)(self->pDerivedObj));
     al_destroy_bitmap(Obj->img);
+    al_destroy_sample_instance(Obj->pick_Sound);
     free(Obj->hitbox);
     free(Obj);
     free(self);

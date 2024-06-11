@@ -97,7 +97,7 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->weapon_attack = algif_new_gif(configs[charaType].weapon_attack, -1);
 
     // load effective sound
-    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
+    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/chara_atk.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(pDerivedObj->atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->atk_Sound, al_get_default_mixer());
@@ -145,6 +145,18 @@ Elements *New_Character(int label, CharacterType charaType)
     pDerivedObj->state = STOP;
     pDerivedObj->new_proj = false;
 
+    // sound
+    pDerivedObj->levelup = al_load_sample("assets/sound/levelup.wav");
+    if (pDerivedObj->levelup == NULL) printf("Error");
+    al_reserve_samples(20);
+    pDerivedObj->sample_levelup = al_create_sample_instance(pDerivedObj->levelup);
+    // Loop the song until the display closes
+    al_set_sample_instance_playmode(pDerivedObj->sample_levelup, ALLEGRO_PLAYMODE_ONCE);
+    al_restore_default_mixer();
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_levelup, al_get_default_mixer());
+    // set the volume of instance
+    al_set_sample_instance_gain(pDerivedObj->levelup, 0.7);
+
     pObj->pDerivedObj = pDerivedObj;
     // 設定派生對象的函數
     pObj->Draw = Character_draw;
@@ -180,6 +192,7 @@ void Character_update(Elements *self)
         chara->xp -= chara->levelExpNeed;
         chara->levelExpNeed = chara->levelExpNeed * chara->ene_level;
         level_up = true;
+        al_play_sample_instance(chara->sample_levelup);
         Elements *levelup = New_Levelup(Levelup_L, chara);
         _Register_elements(scene, levelup);
         everything_stop = true;
@@ -414,6 +427,7 @@ void Character_destory(Elements *self)
 {
     Character *Obj = ((Character *)(self->pDerivedObj));
     al_destroy_sample_instance(Obj->atk_Sound);
+    al_destroy_sample_instance(Obj->sample_levelup);
     for (int i = 0; i < 3; i++)
     {
         algif_destroy_animation(Obj->gif_status[i]);

@@ -72,6 +72,13 @@ Elements *New_Levelup(int label, Character *player)
     pDerivedObj->player = player;
     pDerivedObj->mouse_button_pressed = true;
 
+    // load effective sound
+    pDerivedObj->song = al_load_sample("assets/sound/drop.wav");
+    pDerivedObj->sample_instance = al_create_sample_instance(pDerivedObj->song);
+    al_set_sample_instance_playmode(pDerivedObj->sample_instance, ALLEGRO_PLAYMODE_ONCE);
+    al_attach_sample_instance_to_mixer(pDerivedObj->sample_instance, al_get_default_mixer());
+    al_set_sample_instance_gain(pDerivedObj->sample_instance, 0.4);
+
     // Initialize enhancements (randomly select 3 enhancements)
     for (int i = 0; i < 3; i++)
     {
@@ -123,6 +130,7 @@ void Levelup_handle_mouse_click(Levelup *Obj, Elements *self, int mouse_x, int m
         int x = startX + i * (Obj->enhancements[i].width + SPACE);
         if (mouse_x >= x && mouse_x <= x + Obj->enhancements[i].width && mouse_y >= y && mouse_y <= y + Obj->enhancements[i].width)
         {
+            al_play_sample_instance(Obj->sample_instance);
             // Enhancement selected, apply the enhancement
             // For example, if it increases health, add to player's health
             if (strcmp(Obj->enhancements[i].description, "Max HP +20%") == 0)
@@ -210,6 +218,8 @@ void Levelup_destory(Elements *self)
 {
     Levelup *Obj = ((Levelup *)(self->pDerivedObj));
     al_destroy_bitmap(Obj->background);
+    al_destroy_sample(Obj->song);
+    al_destroy_sample_instance(Obj->sample_instance);
     for (int i = 0; i < 7; i++)
     {
         al_destroy_bitmap(icons[i]);

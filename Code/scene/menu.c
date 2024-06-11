@@ -97,6 +97,8 @@ void menu_destroy(Scene *self)
     al_destroy_font(Obj->font_small);
     al_destroy_sample(Obj->song_background);
     al_destroy_sample_instance(Obj->sample_instance_background);
+    al_destroy_sample(Obj->song_enter);
+    al_destroy_sample_instance(Obj->sample_instance_enter);
     free(Obj);
     free(self);
 }
