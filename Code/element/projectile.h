@@ -19,6 +19,7 @@ typedef struct _Projectile
     double damage;
     ALGIF_ANIMATION *animation;
     Shape *hitbox; // the hitbox of object
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance;
 } Projectile;
 
 

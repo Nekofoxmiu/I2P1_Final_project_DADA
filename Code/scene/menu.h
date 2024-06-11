@@ -17,8 +17,10 @@ typedef struct _Menu
     ALLEGRO_BITMAP *background;
     ALGIF_ANIMATION *torch;
     ALGIF_ANIMATION *charactor;
-    ALLEGRO_SAMPLE *song;
-    ALLEGRO_SAMPLE_INSTANCE *sample_instance;
+    ALLEGRO_SAMPLE *song_background;
+    ALLEGRO_SAMPLE *song_enter;
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance_background;
+    ALLEGRO_SAMPLE_INSTANCE *sample_instance_enter;
     int title_x, title_y;
 } Menu;
 Scene *New_Menu(int label);

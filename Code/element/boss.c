@@ -87,7 +87,7 @@ Elements *New_Boss(int label, Character *target)
     pDerivedObj->gif_status[ATK] = algif_new_gif(configs[default_boss_L].attack, -1);
 
     // load effective sound
-    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/atk_sound.wav");
+    ALLEGRO_SAMPLE *sample = al_load_sample("assets/sound/boss_atk.wav");
     pDerivedObj->atk_Sound = al_create_sample_instance(sample);
     al_set_sample_instance_playmode(pDerivedObj->atk_Sound, ALLEGRO_PLAYMODE_ONCE);
     al_attach_sample_instance_to_mixer(pDerivedObj->atk_Sound, al_get_default_mixer());
@@ -283,6 +283,7 @@ void Boss_destroy(Elements *self)
     for (int i = 0; i < 3; i++)
         algif_destroy_animation(boss->gif_status[i]);
 
+    al_destroy_sample_instance(boss->atk_Sound);
     free(boss->hitbox);
     free(boss);
     free(self);
