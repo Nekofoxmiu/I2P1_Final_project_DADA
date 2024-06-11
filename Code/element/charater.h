@@ -53,6 +53,7 @@ typedef struct _Character
     char dir;          // 'L' for left, 'R' for right
     int weapon_x, weapon_y; // rotation of the weapon
     ALLEGRO_BITMAP *weapon;
+    ALLEGRO_BITMAP *skill_overlay;
     ALGIF_ANIMATION *weapon_attack;
     int state;                      // the state of character
     ALGIF_ANIMATION *gif_status[4]; // gif for each state. 0: stop, 1: move, 2:attack
